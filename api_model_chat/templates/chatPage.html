@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat with {{ target_user.code }}</title>
+    <style>
+        /* Adiciona um pouco de estilo para a área de chat */
+        #chat-log {
+            border: 1px solid #000;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+        }
+        #chat-message-input {
+            width: calc(100% - 80px); /* Ajusta o tamanho do campo de entrada */
+            padding: 5px;
+        }
+        #send-message {
+            width: 70px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat with {{ target_user.code }}</h1>
+
+    <div id="chat-log"></div>
+
+    <input type="text" id="chat-message-input" autocomplete="off">
+    <button id="send-message">Send</button>
+
+    <script>
+        // Obtenha a matrícula do usuário logado e do usuário alvo
+        const code = "{{ request.user.code }}";
+        const targetcode = "{{ target_user.code }}";
+
+        // WebSocket com a rota usando a matrícula
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + targetcode + '/'
+        );
+
+        // Recebe e exibe as mensagens no chat
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const chatLog = document.getElementById('chat-log');
+            const newMessage = document.createElement('div');
+
+            // Exibe a mensagem e o horário se disponível
+            const timeDisplay = data.time ? ` (${data.time})` : '';
+            newMessage.textContent = `${data.username}: ${data.message}${timeDisplay}`;
+            chatLog.appendChild(newMessage);
+            chatLog.scrollTop = chatLog.scrollHeight;  // Mantém o scroll na parte inferior
+        };
+
+        // Trata o fechamento inesperado do WebSocket
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        // Envia a mensagem ao clicar no botão ou pressionar Enter
+        document.getElementById('send-message').onclick = function() {
+            sendMessage();
+        };
+
+        document.getElementById('chat-message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();  // Evita o envio do formulário
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const messageInputDom = document.getElementById('chat-message-input');
+            const message = messageInputDom.value;
+
+            if (message.trim() === '') {
+                return;  // Não envia mensagens vazias
+            }
+
+            // Envia a mensagem junto com o horário local
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': code,
+                'time': new Date().toLocaleTimeString()
+            }));
+            messageInputDom.value = '';  // Limpa o campo de entrada após o envio
+        }
+    </script>
+</body>
+</html>

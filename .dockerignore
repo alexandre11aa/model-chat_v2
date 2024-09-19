@@ -1,0 +1,70 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+.installed.cfg
+*.egg
+*.whl
+
+# Django stuff:
+**/migrations/
+**/staticfiles/
+**/media/
+
+# Django log files
+*.log
+
+# Pytest cache and coverage
+.cache/
+coverage/
+htmlcov/
+.tox/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# VS Code
+.vscode/
+
+# IDEs
+.idea/
+*.iml
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Local virtual environments
+.local/
+
+# OS generated files
+.DS_Store
+*.swp
+*.swo
+Thumbs.db
+
+# Docker-related
+Dockerfile
+docker-compose.yml
+
+# Git
+.git/
+.gitignore
+
+# Secrets
+*.env
+.env.*
+.envrc
