@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with {{ target_user.code }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
         #chat-log {
-            border: 1px solid #000;
+            border: 1px solid #ddd;
             padding: 10px;
             height: 300px;
             overflow-y: scroll;
@@ -15,28 +16,28 @@
         }
         #chat-message-input {
             width: calc(100% - 80px);
-            padding: 5px;
-            box-sizing: border-box;
-        }
-        #send-message {
-            width: 70px;
-            padding: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Chat with {{ target_user.code }}</h1>
+    <div class="container mt-5">
+        <h1 class="text-center">Chat with {{ target_user.code }}</h1>
 
-    <div id="chat-log">
-        {% for message in messages %}
-            <div>
-                <strong>{{ message.sender.name }}:</strong> {{ message.message }} <em>({{ message.timestamp|date:"H:i" }})</em>
+        <div id="chat-log" class="mb-3 p-2">
+            {% for message in messages %}
+                <div>
+                    <strong>{{ message.sender.name }}:</strong> {{ message.message }} <em>({{ message.timestamp|date:"H:i" }})</em>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="chat-message-input" class="form-control" autocomplete="off" placeholder="Type your message...">
+            <div class="input-group-append">
+                <button id="send-message" class="btn btn-primary">Send</button>
             </div>
-        {% endfor %}
+        </div>
     </div>
-
-    <input type="text" id="chat-message-input" autocomplete="off" placeholder="Type your message...">
-    <button id="send-message">Send</button>
 
     <script>
         const loggedUserCode = "{{ request.user.code }}";
@@ -52,7 +53,7 @@
             const newMessage = document.createElement('div');
 
             const timeDisplay = data.time ? ` (${data.time})` : '';
-            newMessage.textContent = `${data.username}: ${data.message}${timeDisplay}`;
+            newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}${timeDisplay}`;
             chatLog.appendChild(newMessage);
             chatLog.scrollTop = chatLog.scrollHeight;
         };

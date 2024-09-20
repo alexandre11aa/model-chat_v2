@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <title>Users List</title>
     <style>
         .user-list {
@@ -9,11 +12,12 @@
         }
 
         .user-list li {
-            padding: 10px;
+            padding: 15px;
             margin: 5px 0;
             border: 1px solid #ddd;
             border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
 
         .user-list li:hover {
@@ -21,15 +25,23 @@
         }
     </style>
 </head>
-<body>
-    <h1>Users List</h1>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Users List</h1>
+        
+        <p class="text-center">Logged in as: <strong>{{ logged_user.name }}</strong></p>  <!-- Nome do usuário logado -->
 
-    <ul class="user-list">
-        {% for user in users %}
-            <li onclick="window.location.href='{% url 'chat-page' user.code %}'">
-                {{ user.name }} ({{ user.code }})
-            </li>
-        {% endfor %}
-    </ul>
+        <ul class="user-list list-group">
+            {% for user in users %}
+                <li class="list-group-item" onclick="window.location.href='{% url 'chat-page' user.code %}'">
+                    {{ user.name }} ({{ user.code }})
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
