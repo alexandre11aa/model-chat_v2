@@ -27,33 +27,34 @@
 <body>
     <h1>Chat with {{ target_user.code }}</h1>
 
-    <div id="chat-log"></div>
+    <div id="chat-log">
+        {% for message in messages %}
+            <div>
+                <strong>{{ message.sender.name }}:</strong> {{ message.message }} <em>({{ message.timestamp|date:"H:i" }})</em>
+            </div>
+        {% endfor %}
+    </div>
 
     <input type="text" id="chat-message-input" autocomplete="off" placeholder="Type your message...">
     <button id="send-message">Send</button>
 
     <script>
-        
-        // Obtenha o código do usuário logado e do usuário alvo
         const loggedUserCode = "{{ request.user.code }}";
         const targetUserCode = "{{ target_user.code }}";
 
-        // WebSocket com a rota usando os códigos dos usuários
         const chatSocket = new WebSocket(
             'ws://' + window.location.host + '/ws/chat/' + loggedUserCode + '/' + targetUserCode + '/'
         );
 
-        // Recebe e exibe as mensagens no chat
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             const chatLog = document.getElementById('chat-log');
             const newMessage = document.createElement('div');
 
-            // Exibe a mensagem e o horário se disponível
             const timeDisplay = data.time ? ` (${data.time})` : '';
             newMessage.textContent = `${data.username}: ${data.message}${timeDisplay}`;
             chatLog.appendChild(newMessage);
-            chatLog.scrollTop = chatLog.scrollHeight;  // Mantém o scroll na parte inferior
+            chatLog.scrollTop = chatLog.scrollHeight;
         };
 
         chatSocket.onclose = function(e) {
@@ -66,7 +67,7 @@
 
         document.getElementById('chat-message-input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                e.preventDefault();  // Evita o envio do formulário
+                e.preventDefault();
                 sendMessage();
             }
         });
@@ -76,7 +77,7 @@
             const message = messageInputDom.value.trim();
 
             if (message === '') {
-                return;  // Não envia mensagens vazias
+                return;
             }
 
             chatSocket.send(JSON.stringify({
@@ -84,7 +85,7 @@
                 'username': loggedUserCode,
                 'time': new Date().toLocaleTimeString()
             }));
-            messageInputDom.value = '';  // Limpa o campo de entrada após o envio
+            messageInputDom.value = '';
         }
     </script>
 </body>

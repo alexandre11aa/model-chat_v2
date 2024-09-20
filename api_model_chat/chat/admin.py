@@ -1,10 +1,6 @@
 from django.contrib import admin
 from .models import Message
 
-# Registra o modelo Message no admin do Django
-from django.contrib import admin
-from .models import Message
-
 @admin.register(Message)
 class MessageAdmin(admin.ModelAdmin):
 
