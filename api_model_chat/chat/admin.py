@@ -1,3 +1,19 @@
 from django.contrib import admin
+from .models import Message
 
-# Register your models here.
+# Registra o modelo Message no admin do Django
+from django.contrib import admin
+from .models import Message
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+
+    list_display = ('sender', 'receiver', 'message', 'timestamp')
+
+    search_fields = ('sender__name', 'receiver__name', 'message')
+
+    list_filter = ('timestamp', 'sender', 'receiver')
+
+    ordering = ('-timestamp',)
+
+    list_per_page = 20
