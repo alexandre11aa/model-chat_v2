@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from consumer.models import CustomUser  # Certifique-se de que o caminho está correto
 from .models import Message  # Certifique-se de que o modelo Message está correto
@@ -33,9 +34,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        username = text_data_json['username']
+        username_code = text_data_json['username']
 
-        print(f"Mensagem recebida: {message} de {username}")  # Debug
+        print(f"Mensagem recebida: {message} de {username_code}")  # Debug
 
         # Obtenha o remetente (sender) e o destinatário (receiver)
         try:
@@ -63,15 +64,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             {
                 'type': 'send_message',
                 'message': message,
-                'username': username
+                'username': sender.name,  # Usar o nome do usuário
+                'time': datetime.now().strftime("%H:%M")  # Adiciona o timestamp
             }
         )
 
     async def send_message(self, event):
         message = event['message']
         username = event['username']
+        time = event['time']  # Recebe o timestamp
 
         await self.send(text_data=json.dumps({
             'message': message,
-            'username': username
+            'username': username,
+            'time': time  # Envia o timestamp
         }))
