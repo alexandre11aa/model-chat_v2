@@ -1,12 +1,12 @@
 services:
-  api_model_chat:
-    container_name: api_model_chat
+  model_chat:
+    container_name: model_chat
     build:
       context: .
     ports:
       - 8000:8000
     volumes:
-      - ./api_model_chat:/api_model_chat
+      - ./model_chat:/model_chat
       - ./data/web/static:/data/web/static/
       - ./data/web/media:/data/web/media/
     env_file:

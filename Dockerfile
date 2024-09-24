@@ -5,18 +5,18 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Copia os arquivos necessários para o contêiner
-COPY api_model_chat /api_model_chat
+COPY model_chat /model_chat
 COPY scripts /scripts
 
 # Define o diretório de trabalho
-WORKDIR /api_model_chat
+WORKDIR /model_chat
 
 # Instala dependências e configura permissões
 RUN apt-get update && apt-get install -y netcat-openbsd
 
 RUN python -m venv /venv && \
   /venv/bin/pip install --upgrade pip && \
-  /venv/bin/pip install -r /api_model_chat/requirements.txt && \
+  /venv/bin/pip install -r /model_chat/requirements.txt && \
   mkdir -p /data/web/static && \
   mkdir -p /data/web/media && \
   chmod -R 755 /data/web/static && \

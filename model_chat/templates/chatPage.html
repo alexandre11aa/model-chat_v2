@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with {{ target_user.code }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        #chat-log {
+            border: 1px solid #ddd;
+            padding: 10px;
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 10px;
+            background-color: #f1f1f1;
+        }
+        #chat-message-input {
+            width: calc(100% - 80px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Chat with {{ target_user.code }}</h1>
+
+        <div id="chat-log" class="mb-3 p-2">
+            {% for message in messages %}
+                <div>
+                    <strong>{{ message.sender.name }}:</strong> {{ message.message }} <em>({{ message.timestamp|date:"H:i" }})</em>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="input-group">
+            <input type="text" id="chat-message-input" class="form-control" autocomplete="off" placeholder="Type your message...">
+            <div class="input-group-append">
+                <button id="send-message" class="btn btn-primary">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loggedUserCode = "{{ request.user.code }}";
+        const targetUserCode = "{{ target_user.code }}";
+
+        const chatSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/chat/' + loggedUserCode + '/' + targetUserCode + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            const chatLog = document.getElementById('chat-log');
+            const newMessage = document.createElement('div');
+
+            const timeDisplay = data.time ? ` (${data.time})` : '';
+            newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}${timeDisplay}`;
+            chatLog.appendChild(newMessage);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.getElementById('send-message').onclick = function() {
+            sendMessage();
+        };
+
+        document.getElementById('chat-message-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+            const messageInputDom = document.getElementById('chat-message-input');
+            const message = messageInputDom.value.trim();
+
+            if (message === '') {
+                return;
+            }
+
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'username': loggedUserCode,
+                'time': new Date().toLocaleTimeString()
+            }));
+            messageInputDom.value = '';
+        }
+    </script>
+</body>
+</html>
