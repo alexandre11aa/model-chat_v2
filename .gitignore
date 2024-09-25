@@ -10,7 +10,7 @@ media
 *.bak 
 
 # Ignore only the Django Admin static files
-/static/admin/
+/model_chat/static/admin/
 
 # If you are using PyCharm # 
 # User-specific stuff
