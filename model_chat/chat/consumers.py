@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from consumer.models import CustomUser
-from .models import Message
+from .models import DuoMessage
 from channels.db import database_sync_to_async
 
 # Função que define o nome da sala de chat baseada nos códigos dos dois usuários
@@ -65,7 +65,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             print(f"Salvando mensagem de {sender} para {receiver}")  # Debug para indicar que a mensagem será salva
 
             # Salva a mensagem no banco de dados de forma assíncrona
-            await database_sync_to_async(Message.objects.create)(
+            await database_sync_to_async(DuoMessage.objects.create)(
                 sender=sender,
                 receiver=receiver,
                 message=message

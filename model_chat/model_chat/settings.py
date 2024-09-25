@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     'chat',
+    'chat_group',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

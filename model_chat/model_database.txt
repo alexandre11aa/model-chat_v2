@@ -2,6 +2,16 @@ python manage.py shell
 
 from consumer.models import CustomUser
 
+# Crie um superuser
+superuser = CustomUser.objects.create_superuser(
+    name='admin',
+    email='admin@example.com',
+    password='admin',
+    matricula=1000,
+    sexo='M'
+)
+
+# Crie outros usuários
 user1 = CustomUser.objects.create_user(
     name='joao',
     email='joao@example.com',

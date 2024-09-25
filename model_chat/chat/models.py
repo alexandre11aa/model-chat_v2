@@ -1,7 +1,7 @@
 from django.db import models
-from consumer.models import CustomUser  # Importa o seu modelo de usuário
+from consumer.models import CustomUser, BaseModel
 
-class Message(models.Model):
+class DuoMessage(BaseModel):
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_messages')
     receiver = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='received_messages')
     message = models.TextField()

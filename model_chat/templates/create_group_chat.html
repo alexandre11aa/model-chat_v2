@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Criar Chat em Grupo</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            margin-top: 50px;
+        }
+        .form-label {
+            font-weight: bold;
+        }
+        .user-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .user-list li {
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Criar Chat em Grupo</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="group_name" class="form-label">Nome do Grupo:</label>
+                <input type="text" id="group_name" name="group_name" class="form-control" placeholder="Enter Group Name" required>
+            </div>
+            <label for="group_name" class="form-label">Selecionar Usuários:</label>
+            <div class="form-group">
+                {% for user in users %}
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" name="users" value="{{ user.code }}" id="user-{{ user.code }}">
+                        <label class="form-check-label" for="user-{{ user.code }}">{{ user.name }}</label>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary">Criar Grupo</button>
+        </form>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

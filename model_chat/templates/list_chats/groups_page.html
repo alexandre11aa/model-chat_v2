@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Grupos de Chat</title>
+    <style>
+        .group-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .group-list li {
+            padding: 15px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .group-list li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Grupos de Chat</h1>
+        
+        <p class="text-center">Logado como: <strong>{{ logged_user.name }}</strong></p>  <!-- Nome do usuário logado -->
+
+        <!-- Botão para ir para a página de criação de grupos -->
+        <div class="text-center mt-4">
+            <a href="{% url 'create_group_chat' %}" class="btn btn-primary">Criar Novo Grupo</a>
+        </div>
+
+        <ul class="group-list list-group mt-4">  <!-- Adicionada a classe mt-4 aqui -->
+            {% for group in group_chats %}
+                <li class="list-group-item" onclick="window.location.href='{% url 'group_chat' group.id %}'">
+                    {{ group.name }}
+                </li>
+            {% endfor %}
+        </ul>
+
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
