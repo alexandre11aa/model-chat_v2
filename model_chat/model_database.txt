@@ -13,7 +13,7 @@ superuser = CustomUser.objects.create_superuser(
 
 # Crie outros usuários
 user1 = CustomUser.objects.create_user(
-    name='joao',
+    name='Joao',
     email='joao@example.com',
     password='senha123',
     matricula=1001,
@@ -21,7 +21,7 @@ user1 = CustomUser.objects.create_user(
 )
 
 user2 = CustomUser.objects.create_user(
-    name='maria',
+    name='Maria',
     email='maria@example.com',
     password='senha123',
     matricula=1002,
@@ -29,7 +29,7 @@ user2 = CustomUser.objects.create_user(
 )
 
 user3 = CustomUser.objects.create_user(
-    name='pedro',
+    name='Pedro',
     email='pedro@example.com',
     password='senha123',
     matricula=1003,
@@ -37,7 +37,7 @@ user3 = CustomUser.objects.create_user(
 )
 
 user4 = CustomUser.objects.create_user(
-    name='ana',
+    name='Ana',
     email='ana@example.com',
     password='senha123',
     matricula=1004,

@@ -18,7 +18,18 @@ class LoginView(AuthLoginView):
 def user_list(request):
     users = CustomUser.objects.exclude(id=request.user.id)  # Obtém todos os usuários
     logged_user = request.user  # Usuário logado
-    return render(request, 'list_chats/duo_users_page.html', {'users': users, 'logged_user': logged_user})
+
+    # Contar as mensagens não lidas de cada usuário
+    unread_messages = {
+        user.id: DuoMessage.objects.filter(sender=user, receiver=logged_user, is_read=False).count()
+        for user in users
+    }
+
+    return render(request, 'list_chats/duo_users_page.html', {
+        'users': users,
+        'logged_user': logged_user,
+        'unread_messages': unread_messages
+    })
 
 def chat_view(request, code):
     if not request.user.is_authenticated:
@@ -26,10 +37,14 @@ def chat_view(request, code):
 
     target_user = get_object_or_404(CustomUser, code=code)
 
+    # Obter as mensagens e marcar as não lidas como lidas
     messages = DuoMessage.objects.filter(
         Q(sender=request.user, receiver=target_user) |
         Q(sender=target_user, receiver=request.user)
     ).order_by('timestamp')
+
+    # Marcar as mensagens recebidas pelo usuário logado como lidas
+    DuoMessage.objects.filter(receiver=request.user, sender=target_user, is_read=False).update(is_read=True)
 
     context = {
         'target_user': target_user,

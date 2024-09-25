@@ -1,3 +1,5 @@
+{% load custom_filters %}
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -29,9 +31,8 @@
     <div class="container mt-5">
         <h1 class="text-center mb-4">Lista de Usuários</h1>
 
-        <p class="text-center">Logged in as: <strong>{{ logged_user.name }}</strong></p>  <!-- Nome do usuário logado -->
+        <p class="text-center">Logado como: <strong>{{ logged_user.name }}</strong></p>
         
-        <!-- Botão para redirecionar para a lista de grupos de chat -->
         <div class="text-center mb-4">
             <a href="{% url 'groups_list' %}" class="btn btn-primary">Ir para Grupos</a>
         </div>
@@ -39,7 +40,11 @@
         <ul class="user-list list-group">
             {% for user in users %}
                 <li class="list-group-item" onclick="window.location.href='{% url 'chat-page' user.code %}'">
-                    {{ user.name }} ({{ user.code }})
+                    <!-- {{ user.code }} -->
+                    {{ user.name }}
+                    {% if unread_messages|get_item:user.id %}
+                        <span class="badge badge-warning">{{ unread_messages|get_item:user.id }}</span>
+                    {% endif %}
                 </li>
             {% endfor %}
         </ul>

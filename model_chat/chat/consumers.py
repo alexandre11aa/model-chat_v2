@@ -53,7 +53,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = text_data_json['message']  # Extrai a mensagem do dicionário
         username_code = text_data_json['username']  # Extrai o código do usuário que enviou a mensagem
 
-        print(f"Mensagem recebida: {message} de {username_code}")  # Debug para verificar a mensagem recebida
+        # print(f"Mensagem recebida: {message} de {username_code}")  # Debug para verificar a mensagem recebida
 
         # Obtém o remetente (sender) e o destinatário (receiver) das mensagens
         try:
@@ -62,7 +62,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             # Busca o objeto do usuário destinatário no banco de dados de forma assíncrona
             receiver = await database_sync_to_async(CustomUser.objects.get)(code=self.target_code)
             
-            print(f"Salvando mensagem de {sender} para {receiver}")  # Debug para indicar que a mensagem será salva
+            # print(f"Salvando mensagem de {sender} para {receiver}")  # Debug para indicar que a mensagem será salva
 
             # Salva a mensagem no banco de dados de forma assíncrona
             await database_sync_to_async(DuoMessage.objects.create)(
@@ -71,7 +71,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 message=message
             )
             
-            print("Mensagem salva com sucesso!")  # Debug para indicar que a mensagem foi salva
+            # print("Mensagem salva com sucesso!")  # Debug para indicar que a mensagem foi salva
 
         # Caso um dos usuários não seja encontrado, exibe um erro no console
         except CustomUser.DoesNotExist:
