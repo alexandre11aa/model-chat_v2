@@ -4,7 +4,7 @@ from .models import GroupChat
 
 def create_group_chat(request):
 
-    if not request.user.is_authenticated:
+    if (not request.user.is_authenticated) or (not request.user.is_superuser):
         return redirect("login-user")
     
     if request.method == 'POST':
