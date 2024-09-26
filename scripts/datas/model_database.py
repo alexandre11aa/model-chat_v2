@@ -1,5 +1,3 @@
-python manage.py shell
-
 from consumer.models import CustomUser
 
 # Crie um superuser
