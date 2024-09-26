@@ -15,7 +15,17 @@
             background-color: #f1f1f1;
         }
         #chat-message-input {
-            width: calc(100% - 80px);
+            width: calc(100% - 120px); /* Ajuste para incluir os botões */
+        }
+        .input-group-append .btn {
+            height: 100%; /* Garante que os botões tenham a mesma altura */
+        }
+        .btn-secondary {
+            background-color: #6c757d; /* Cor do botão de procurar */
+            border: none; /* Remove a borda do botão */
+        }
+        #file-input {
+            display: none; /* Esconde o campo de arquivo */
         }
     </style>
 </head>
@@ -32,8 +42,12 @@
         </div>
 
         <div class="input-group">
+            <input type="file" id="file-input" class="form-control-file" accept="image/*,video/*,application/pdf">
             <input type="text" id="chat-message-input" class="form-control" autocomplete="off" placeholder="Type your message...">
             <div class="input-group-append">
+                <button id="" class="btn btn-secondary">
+                    <i class="fas fa-paperclip"></i> <!-- Ícone de clipe de papel -->
+                </button>
                 <button id="send-message" class="btn btn-primary">Send</button>
             </div>
         </div>
