@@ -15,6 +15,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # Método chamado quando o WebSocket é aberto (cliente se conecta)
     async def connect(self):
+        print('\nIniciando processamento assíncrono:\n')
 
         # Obtém o código do usuário e do alvo (a outra pessoa no chat) a partir da URL
         self.user_code = self.scope['url_route']['kwargs'].get('user1_code')
@@ -22,11 +23,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         
         # Se um dos códigos estiver faltando, fecha a conexão
         if not self.user_code or not self.target_code:
+            print(f"Conexão fechada: user_code ou target_code ausente. user_code: {self.user_code}, target_code: {self.target_code}\n")
             await self.close()
             return
         
         # Define o nome da sala de chat com base nos códigos dos usuários
         self.room_name = get_room_name(self.user_code, self.target_code)
+        print(f"Conectando na sala: {self.room_name}")
 
         # Adiciona o canal do cliente ao grupo de WebSocket (sala de chat)
         await self.channel_layer.group_add(
@@ -35,59 +38,63 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
         
         await self.accept()  # Aceita a conexão WebSocket
+        print(f"Conexão aceita para user_code: {self.user_code}")
 
     # Método chamado quando o WebSocket é desconectado
     async def disconnect(self, close_code):
-
         # Remove o canal do cliente do grupo de WebSocket (sala de chat)
         await self.channel_layer.group_discard(
             self.room_name,
             self.channel_name
         )
+        print(f"Conexão fechada: {self.user_code} desconectado.")
 
     # Método chamado quando o servidor recebe uma mensagem do WebSocket
     async def receive(self, text_data):
-
         # Converte os dados JSON recebidos em um dicionário
         text_data_json = json.loads(text_data)
         message = text_data_json['message']  # Extrai a mensagem do dicionário
         username_code = text_data_json['username']  # Extrai o código do usuário que enviou a mensagem
-
-        # print(f"Mensagem recebida: {message} de {username_code}")  # Debug para verificar a mensagem recebida
+        print(f"Mensagem recebida: {message} de {username_code}")
 
         # Obtém o remetente (sender) e o destinatário (receiver) das mensagens
-        try:
-            # Busca o objeto do usuário remetente no banco de dados de forma assíncrona
-            sender = await database_sync_to_async(CustomUser.objects.get)(code=self.user_code)
-            # Busca o objeto do usuário destinatário no banco de dados de forma assíncrona
-            receiver = await database_sync_to_async(CustomUser.objects.get)(code=self.target_code)
-            
-            # print(f"Salvando mensagem de {sender} para {receiver}")  # Debug para indicar que a mensagem será salva
+        # Busca o objeto do usuário remetente no banco de dados de forma assíncrona
+        sender = await database_sync_to_async(CustomUser.objects.get)(code=self.user_code)
+        print(f"Remetente encontrado: {sender.name}")
+        
+        # Busca o objeto do usuário destinatário no banco de dados de forma assíncrona
+        receiver = await database_sync_to_async(CustomUser.objects.get)(code=self.target_code)
+        print(f"Destinatário encontrado: {receiver.name}")
 
-            # Salva a mensagem no banco de dados de forma assíncrona
-            await database_sync_to_async(DuoMessage.objects.create)(
-                sender=sender,
-                receiver=receiver,
-                message=message
-            )
-            
-            # print("Mensagem salva com sucesso!")  # Debug para indicar que a mensagem foi salva
-
-        # Caso um dos usuários não seja encontrado, exibe um erro no console
-        except CustomUser.DoesNotExist:
-            print(f"Usuário não encontrado: {self.user_code} ou {self.target_code}")
-            return
+        # Salva a mensagem no banco de dados de forma assíncrona
+        await database_sync_to_async(DuoMessage.objects.create)(
+            sender=sender,
+            receiver=receiver,
+            message=message
+        )
+        print(f"Mensagem salva no banco de dados: {message}")
 
         # Envia a mensagem para todos os membros do grupo (sala de chat)
         await self.channel_layer.group_send(
             self.room_name,
             {
-                'type': 'send_message',  # Especifica o tipo de evento a ser tratado
-                'message': message,  # Inclui a mensagem enviada
-                'username': sender.name,  # Inclui o nome do remetente
-                'time': datetime.now().strftime("%H:%M")  # Adiciona o timestamp (hora atual)
+                'type': 'send_message',  # Tipo da mensagem a ser tratada
+                'message': message,  # Mensagem a ser enviada
+                'username': sender.name,  # Nome do usuário remetente
+                'time': datetime.now().strftime("%H:%M")  # Hora atual formatada
             }
         )
+        print(f"Mensagem enviada para o grupo: {self.room_name}")
+
+        # Envia uma notificação ao destinatário da mensagem
+        await self.channel_layer.group_send(
+            f"user_notifications_{receiver.code}",  # Nome do grupo de notificações do usuário
+            {
+                'type': 'notify',  # Tipo da notificação
+                'from_user': sender.name  # Nome do usuário que enviou a mensagem
+            }
+        )
+        print(f"Notificação enviada para {receiver.name}")
 
     # Método chamado quando uma mensagem é enviada para o grupo (sala de chat)
     async def send_message(self, event):
@@ -100,4 +107,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'message': message,  # Envia o texto da mensagem
             'username': username,  # Envia o nome do remetente
             'time': time  # Envia o timestamp
+        }))
+        print(f"Mensagem enviada ao cliente: {message} de {username} às {time}")
+
+        print('\nFinalizando processamento assíncrono.\n')
+
+class NotificationConsumer(AsyncWebsocketConsumer):
+    async def connect(self):
+        self.user_code = self.scope['url_route']['kwargs']['user_code']
+        self.group_name = f"user_notifications_{self.user_code}"
+        
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        await self.accept()
+
+    async def disconnect(self, close_code):
+        await self.channel_layer.group_discard(self.group_name, self.channel_name)
+
+    async def notify(self, event):
+        await self.send(text_data=json.dumps({
+            'from_user': event['from_user']
         }))

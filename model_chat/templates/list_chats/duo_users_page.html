@@ -39,8 +39,7 @@
 
         <ul class="user-list list-group">
             {% for user in users %}
-                <li class="list-group-item" onclick="window.location.href='{% url 'chat-page' user.code %}'">
-                    <!-- {{ user.code }} -->
+                <li class="list-group-item" data-user-code="{{ user.code }}" onclick="window.location.href='{% url 'chat-page' user.code %}'">
                     {{ user.name }}
                     {% if unread_messages|get_item:user.id %}
                         <span class="badge badge-warning">{{ unread_messages|get_item:user.id }}</span>
@@ -49,6 +48,44 @@
             {% endfor %}
         </ul>
     </div>
+
+    <script>
+        const userCode = "{{ logged_user.code }}";
+        const notificationSocket = new WebSocket(
+            'ws://' + window.location.host + '/ws/notifications/' + userCode + '/'
+        );
+    
+        notificationSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            console.log("Dados recebidos:", data);
+    
+            const fromUser = data.from_user.trim();
+            console.log("fromUser recebido:", fromUser);
+    
+            // Criar uma lista limpa de usuários apenas com os nomes
+            const userList = Array.from(document.querySelectorAll('.user-list li')).map(li => {
+                return li.innerText.split(/\s*\d+\s*$/)[0].trim(); // Remove o número e espaços em branco
+            });
+            console.log("Lista de usuários:", userList);
+    
+            // Encontrar o elemento de usuário usando o nome
+            const userElement = Array.from(document.querySelectorAll('.user-list li')).find(li => {
+                return li.innerText.split(/\s*\d+\s*$/)[0].trim() === fromUser;
+            });
+    
+            if (userElement) {
+                let badge = userElement.querySelector('.badge');
+                if (badge) {
+                    badge.textContent = parseInt(badge.textContent) + 1; // Somar 1
+                } else {
+                    userElement.innerHTML += `<span class="badge badge-warning">1</span>`; // Definir como 1
+                }
+                console.log("Atualizando badge:", badge ? badge.textContent : '1');
+            } else {
+                console.log("Usuário não encontrado na lista:", fromUser);
+            }
+        };
+    </script>
     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
