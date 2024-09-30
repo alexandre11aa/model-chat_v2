@@ -1,5 +1,5 @@
 asgiref==3.8.1
-Django==5.1.1
+Django==5.1.1 #Testar código na versão 4.2.16
 sqlparse==0.5.1
 psycopg2==2.9.9
 Pillow>=9.0.0
