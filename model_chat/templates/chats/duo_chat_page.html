@@ -46,8 +46,7 @@
             <input type="file" id="file-input" class="form-control-file" accept="image/*,video/*,application/pdf">
             <input type="text" id="chat-message-input" class="form-control" autocomplete="off" placeholder="Type your message...">
             <div class="input-group-append">
-                <button id="" class="btn btn-secondary">
-                    <i class="fas fa-paperclip"></i> <!-- Ícone de clipe de papel -->
+                <button class="btn btn-secondary" id="attach-file"> <i class="fas fa-paperclip"></i> <!-- Ícone de clipe de papel -->
                 </button>
                 <button id="send-message" class="btn btn-primary">Send</button>
             </div>
@@ -62,25 +61,12 @@
             'ws://' + window.location.host + '/ws/chat/' + loggedUserCode + '/' + targetUserCode + '/'
         );
 
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            const chatLog = document.getElementById('chat-log');
-            const newMessage = document.createElement('div');
+        // Adiciona manipuladores de eventos ao socket
+        chatSocket.onmessage = handleIncomingMessage;
+        chatSocket.onclose = handleSocketClose;
 
-            const timeDisplay = data.time ? ` (${data.time})` : '';
-            newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}${timeDisplay}`;
-            chatLog.appendChild(newMessage);
-            chatLog.scrollTop = chatLog.scrollHeight;
-        };
-
-        chatSocket.onclose = function(e) {
-            console.error('Chat socket closed unexpectedly');
-        };
-
-        document.getElementById('send-message').onclick = function() {
-            sendMessage();
-        };
-
+        // Configura botões de envio de mensagens
+        document.getElementById('send-message').onclick = sendMessage;
         document.getElementById('chat-message-input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -88,21 +74,56 @@
             }
         });
 
+        /**
+         * Manipula mensagens recebidas do WebSocket.
+         * @param {MessageEvent} event - O evento de mensagem do WebSocket.
+         */
+        function handleIncomingMessage(event) {
+            const data = JSON.parse(event.data);
+            const chatLog = document.getElementById('chat-log');
+
+            // Cria e exibe uma nova mensagem no log de chat
+            const newMessage = document.createElement('div');
+            const timeDisplay = data.time ? ` (${data.time})` : '';
+            newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}${timeDisplay}`;
+            chatLog.appendChild(newMessage);
+            chatLog.scrollTop = chatLog.scrollHeight; // Rolagem automática para a nova mensagem
+        }
+
+        /**
+         * Manipula o fechamento do socket.
+         * @param {CloseEvent} event - O evento de fechamento do WebSocket.
+         */
+        function handleSocketClose(event) {
+            console.error('Chat socket closed unexpectedly');
+        }
+
+        /**
+         * Envia uma mensagem através do WebSocket.
+         */
         function sendMessage() {
             const messageInputDom = document.getElementById('chat-message-input');
             const message = messageInputDom.value.trim();
 
+            // Não envia mensagens vazias
             if (message === '') {
                 return;
             }
 
+            // Envia a mensagem pelo socket
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'username': loggedUserCode,
                 'time': new Date().toLocaleTimeString()
             }));
+
+            // Limpa o campo de entrada após o envio
             messageInputDom.value = '';
         }
+    </script>
+
+    <script>
+        // Aqui
     </script>
 </body>
 </html>
