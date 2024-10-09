@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
 from consumer.models import CustomUser
-from .models import DuoMessage
+from .models import DuoMessage, DuoFile
 from channels.db import database_sync_to_async
 
 # Função que define o nome da sala de chat baseada nos códigos dos dois usuários
@@ -51,50 +51,56 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # Método chamado quando o servidor recebe uma mensagem do WebSocket
     async def receive(self, text_data):
-        # Converte os dados JSON recebidos em um dicionário
         text_data_json = json.loads(text_data)
-        message = text_data_json['message']  # Extrai a mensagem do dicionário
-        username_code = text_data_json['username']  # Extrai o código do usuário que enviou a mensagem
-        print(f"Mensagem recebida: {message} de {username_code}")
 
-        # Obtém o remetente (sender) e o destinatário (receiver) das mensagens
-        # Busca o objeto do usuário remetente no banco de dados de forma assíncrona
+        # Verifica se é uma mensagem de texto ou arquivo
+        message = text_data_json.get('message', None)
+        #file_data = text_data_json.get('file', None)  # Verifica se há um arquivo
+
         sender = await database_sync_to_async(CustomUser.objects.get)(code=self.user_code)
-        print(f"Remetente encontrado: {sender.name}")
-        
-        # Busca o objeto do usuário destinatário no banco de dados de forma assíncrona
         receiver = await database_sync_to_async(CustomUser.objects.get)(code=self.target_code)
-        print(f"Destinatário encontrado: {receiver.name}")
 
-        # Salva a mensagem no banco de dados de forma assíncrona
-        await database_sync_to_async(DuoMessage.objects.create)(
-            sender=sender,
-            receiver=receiver,
-            message=message
-        )
-        print(f"Mensagem salva no banco de dados: {message}")
+        if message:  # Caso seja uma mensagem de texto
+            await database_sync_to_async(DuoMessage.objects.create)(
+                sender=sender,
+                receiver=receiver,
+                message=message
+            )
 
-        # Envia a mensagem para todos os membros do grupo (sala de chat)
-        await self.channel_layer.group_send(
-            self.room_name,
-            {
-                'type': 'send_message',  # Tipo da mensagem a ser tratada
-                'message': message,  # Mensagem a ser enviada
-                'username': sender.name,  # Nome do usuário remetente
-                'time': datetime.now().strftime("%H:%M")  # Hora atual formatada
-            }
-        )
-        print(f"Mensagem enviada para o grupo: {self.room_name}")
+            await self.channel_layer.group_send(
+                self.room_name,
+                {
+                    'type': 'send_message',
+                    'message': message,
+                    'username': sender.name,
+                    'time': datetime.now().strftime("%H:%M")
+                }
+            )
 
-        # Envia uma notificação ao destinatário da mensagem
-        await self.channel_layer.group_send(
-            f"user_notifications_{receiver.code}",  # Nome do grupo de notificações do usuário
-            {
-                'type': 'notify',  # Tipo da notificação
-                'from_user': sender.name  # Nome do usuário que enviou a mensagem
-            }
-        )
-        print(f"Notificação enviada para {receiver.name}")
+        '''elif file_data:  # Caso seja um arquivo
+            file_name = text_data_json.get('filename')
+    
+            # Salva o arquivo no banco de dados
+            duo_file = await database_sync_to_async(DuoFile.objects.create)(
+                sender=sender,
+                receiver=receiver,
+                file=file_data  # Salva o nome do arquivo
+            )
+
+            # Obter a URL do arquivo salvo
+            file_url = duo_file.file.url  # Isso assume que você tem um FileField no seu modelo DuoFile
+
+            # Notifica o grupo sobre o envio do arquivo
+            await self.channel_layer.group_send(
+                self.room_name,
+                {
+                    'type': 'send_message',
+                    'file': file_url,  # Enviar a URL do arquivo
+                    'filename': file_name,
+                    'username': sender.name,
+                    'time': datetime.now().strftime("%H:%M")
+                }
+            )'''
 
     # Método chamado quando uma mensagem é enviada para o grupo (sala de chat)
     async def send_message(self, event):

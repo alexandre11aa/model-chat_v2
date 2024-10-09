@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with {{ target_user.code }}</title>
+    <title>Chat with {{ target_user.name }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> <!-- Para clipe de papel -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> <!-- Ícone de clipe de papel -->
     <style>
         #chat-log {
             border: 1px solid #ddd;
@@ -25,7 +25,7 @@
             background-color: #6c757d; /* Cor do botão de procurar */
             border: none; /* Remove a borda do botão */
         }
-        #file-input {
+        #chat-file-input {
             display: none; /* Esconde o campo de arquivo */
         }
     </style>
@@ -43,10 +43,10 @@
         </div>
 
         <div class="input-group">
-            <input type="file" id="file-input" class="form-control-file" accept="image/*,video/*,application/pdf">
+            <input type="file" id="chat-file-input" class="form-control-file" accept="image/*,video/*,application/pdf">
             <input type="text" id="chat-message-input" class="form-control" autocomplete="off" placeholder="Type your message...">
             <div class="input-group-append">
-                <button class="btn btn-secondary" id="attach-file"> <i class="fas fa-paperclip"></i> <!-- Ícone de clipe de papel -->
+                <button class="btn btn-secondary" id="send-file"> <i class="fas fa-paperclip"></i> <!-- Ícone de clipe de papel -->
                 </button>
                 <button id="send-message" class="btn btn-primary">Send</button>
             </div>
@@ -56,74 +56,114 @@
     <script>
         const loggedUserCode = "{{ request.user.code }}";
         const targetUserCode = "{{ target_user.code }}";
-
+    
         const chatSocket = new WebSocket(
             'ws://' + window.location.host + '/ws/chat/' + loggedUserCode + '/' + targetUserCode + '/'
         );
-
-        // Adiciona manipuladores de eventos ao socket
+    
         chatSocket.onmessage = handleIncomingMessage;
         chatSocket.onclose = handleSocketClose;
-
-        // Configura botões de envio de mensagens
-        document.getElementById('send-message').onclick = sendMessage;
+    
+        // Envia mensagens ao pressionar Enter
         document.getElementById('chat-message-input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
                 sendMessage();
             }
         });
-
-        /**
-         * Manipula mensagens recebidas do WebSocket.
-         * @param {MessageEvent} event - O evento de mensagem do WebSocket.
-         */
-        function handleIncomingMessage(event) {
-            const data = JSON.parse(event.data);
-            const chatLog = document.getElementById('chat-log');
-
-            // Cria e exibe uma nova mensagem no log de chat
-            const newMessage = document.createElement('div');
-            const timeDisplay = data.time ? ` (${data.time})` : '';
-            newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}${timeDisplay}`;
-            chatLog.appendChild(newMessage);
-            chatLog.scrollTop = chatLog.scrollHeight; // Rolagem automática para a nova mensagem
+    
+        document.getElementById('send-message').onclick = sendMessage;
+    
+        // Botão de anexo de arquivo
+        document.getElementById('send-file').onclick = function () {
+            document.getElementById('chat-file-input').click();  // Simula clique no input de arquivo
+        };
+    
+        // Função para obter o token CSRF
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
         }
-
-        /**
-         * Manipula o fechamento do socket.
-         * @param {CloseEvent} event - O evento de fechamento do WebSocket.
-         */
-        function handleSocketClose(event) {
-            console.error('Chat socket closed unexpectedly');
-        }
-
-        /**
-         * Envia uma mensagem através do WebSocket.
-         */
+    
+        const csrftoken = getCookie('csrftoken'); // Obtém o token CSRF
+    
+        // Quando o arquivo é selecionado, faz upload pelo WebSocket
+        document.getElementById('chat-file-input').onchange = function(event) {
+            const file = event.target.files[0];
+    
+            if (file) {
+                // Crie um FormData para enviar o arquivo
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('filename', file.name);
+                
+                // Envie o arquivo usando XMLHttpRequest (XHR)
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/upload-url/');  // Altere para a URL onde o upload deve ocorrer
+                
+                // Adiciona o token CSRF no cabeçalho da requisição
+                xhr.setRequestHeader('X-CSRFToken', csrftoken);
+    
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        // Aqui você pode lidar com a resposta do servidor, se necessário
+                        console.log('Arquivo enviado com sucesso!');
+                    } else {
+                        console.error('Erro ao enviar o arquivo.');
+                    }
+                };
+    
+                xhr.send(formData);  // Envia o FormData
+            }
+        };
+    
         function sendMessage() {
             const messageInputDom = document.getElementById('chat-message-input');
             const message = messageInputDom.value.trim();
-
-            // Não envia mensagens vazias
+    
             if (message === '') {
-                return;
+                return;  // Não envia mensagens vazias
             }
-
-            // Envia a mensagem pelo socket
+    
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'username': loggedUserCode,
                 'time': new Date().toLocaleTimeString()
             }));
-
-            // Limpa o campo de entrada após o envio
-            messageInputDom.value = '';
+    
+            messageInputDom.value = '';  // Limpa o campo de entrada
         }
-    </script>
-
-    <script>
-        // Aqui
-    </script>
+    
+        function handleIncomingMessage(event) {
+            const data = JSON.parse(event.data);
+            const chatLog = document.getElementById('chat-log');
+    
+            const newMessage = document.createElement('div');
+            const timeDisplay = data.time ? ` (${data.time})` : '';
+            
+            if (data.file) {
+                newMessage.innerHTML = `<strong>${data.username}:</strong> <a href="${data.file}" download="${data.filename}">Download ${data.filename}</a>${timeDisplay}`;
+            } else {
+                newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}${timeDisplay}`;
+            }
+    
+            chatLog.appendChild(newMessage);
+            chatLog.scrollTop = chatLog.scrollHeight;  // Rolagem automática
+        }
+    
+        function handleSocketClose(event) {
+            console.error('Chat socket closed unexpectedly');
+        }
+    </script>    
 </body>
 </html>
