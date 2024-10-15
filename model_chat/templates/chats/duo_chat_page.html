@@ -100,29 +100,34 @@
         // Quando o arquivo é selecionado, faz upload pelo WebSocket
         document.getElementById('chat-file-input').onchange = function(event) {
             const file = event.target.files[0];
-    
+        
             if (file) {
-                // Crie um FormData para enviar o arquivo
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('filename', file.name);
-                
-                // Envie o arquivo usando XMLHttpRequest (XHR)
+        
+                // Enviar o arquivo para o backend (upload)
                 const xhr = new XMLHttpRequest();
-                xhr.open('POST', '/upload-url/');  // Altere para a URL onde o upload deve ocorrer
-                
-                // Adiciona o token CSRF no cabeçalho da requisição
+                xhr.open('POST', '/upload-file/');
                 xhr.setRequestHeader('X-CSRFToken', csrftoken);
-    
+        
                 xhr.onload = function() {
                     if (xhr.status === 200) {
-                        // Aqui você pode lidar com a resposta do servidor, se necessário
-                        console.log('Arquivo enviado com sucesso!');
+                        const response = JSON.parse(xhr.responseText);
+                        const fileUrl = `/uploads/${response.filename}`;  // Supondo que o arquivo seja salvo na pasta 'uploads'
+        
+                        // Enviar o arquivo via WebSocket para o chat
+                        chatSocket.send(JSON.stringify({
+                            'file': fileUrl,
+                            'filename': response.filename,
+                            'username': loggedUserCode,
+                            'time': new Date().toLocaleTimeString()
+                        }));
                     } else {
                         console.error('Erro ao enviar o arquivo.');
                     }
                 };
-    
+        
                 xhr.send(formData);  // Envia o FormData
             }
         };
@@ -164,6 +169,6 @@
         function handleSocketClose(event) {
             console.error('Chat socket closed unexpectedly');
         }
-    </script>    
+    </script> 
 </body>
 </html>

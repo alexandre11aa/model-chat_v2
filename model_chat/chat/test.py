@@ -1,3 +1,7 @@
+# Envio de arquivos funcional, porém sem histórico de mensagens
+
+#  consumers.py 
+
 import json
 from datetime import datetime
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -51,34 +55,56 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # Método chamado quando o servidor recebe uma mensagem do WebSocket
     async def receive(self, text_data):
-        data_json = json.loads(text_data)
+        data = json.loads(text_data)
+        message = data.get('message')
+        username = data.get('username')
+        file_url = data.get('file')  # Adiciona suporte para arquivos
 
-        # Verifica se é uma mensagem de texto ou arquivo
-        message = data_json.get('message', None)
-        file = data_json.get('file', None)  # Verifica se há um arquivo
+        timestamp = data.get('time', datetime.now().strftime('%H:%M'))
 
-        sender = await database_sync_to_async(CustomUser.objects.get)(code=self.user_code)
-        receiver = await database_sync_to_async(CustomUser.objects.get)(code=self.target_code)
+        if file_url:
+            await self.save_file(username, file_url)
 
-        if message:  # Caso seja uma mensagem de texto
-            await database_sync_to_async(DuoMessage.objects.create)(
-                sender=sender,
-                receiver=receiver,
-                message=message
-            )
+        # Envia a mensagem (ou o arquivo) para o grupo
+        await self.channel_layer.group_send(
+            self.room_name,
+            {
+                'type': 'chat_message',
+                'message': message,
+                'username': username,
+                'file_url': file_url,  # Adiciona a URL do arquivo à mensagem
+                'time': timestamp,
+            }
+        )
 
-            await self.channel_layer.group_send(
-                self.room_name,
-                {
-                    'type': 'send_message',
-                    'message': message,
-                    'username': sender.name,
-                    'time': datetime.now().strftime("%H:%M")
-                }
-            )
+    # Método que será chamado para processar a mensagem enviada
+    async def chat_message(self, event):
+        message = event['message']
+        username = event['username']
+        file_url = event.get('file_url')
+        time = event['time']
 
-        elif file:  # Caso seja um arquivo
-            pass # Escreva uma lógica similar ao de mensagem, para file
+        # Envia a mensagem ao WebSocket (cliente)
+        if file_url:
+            await self.send(text_data=json.dumps({
+                'username': username,
+                'file': file_url,  # URL do arquivo para download
+                'time': time,
+            }))
+        else:
+            await self.send(text_data=json.dumps({
+                'username': username,
+                'message': message,
+                'time': time,
+            }))
+
+    @database_sync_to_async
+    def save_file(self, sender_code, file_url):
+        sender = CustomUser.objects.get(code=sender_code)
+        receiver = CustomUser.objects.get(code=self.target_code)
+
+        # Salva a referência do arquivo no banco de dados
+        DuoFile.objects.create(sender=sender, receiver=receiver, file=file_url)
 
     # Método chamado quando uma mensagem é enviada para o grupo (sala de chat)
     async def send_message(self, event):

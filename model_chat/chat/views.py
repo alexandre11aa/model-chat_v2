@@ -64,9 +64,9 @@ def chat_view(request, code):
 import os
 
 def upload_file(request):
+
     # Obtém o diretório atual
     current_directory = os.getcwd()
-    print(f'Diretório atual: {current_directory}')  # Isso imprimirá o diretório atual no console
 
     # Define o caminho para o diretório 'uploads'
     uploads_directory = os.path.join(current_directory, 'uploads')
@@ -87,4 +87,5 @@ def upload_file(request):
                     destination.write(chunk)
 
             return JsonResponse({'success': True, 'filename': filename})
+        
     return JsonResponse({'error': 'Invalid request'}, status=400)

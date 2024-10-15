@@ -6,5 +6,5 @@ urlpatterns = [
     path("login/", LoginView.as_view(template_name="login_page.html"), name="login-user"),
     path('users/', user_list, name='user_list'),
     path("chat/<str:code>/", chat_view, name="chat-page"),
-    path('upload-url/', upload_file, name='upload_file')
+    path('upload-file/', upload_file, name='upload_file')
 ]
