@@ -51,42 +51,38 @@
 
     <script>
         const userCode = "{{ logged_user.code }}";
-        const notificationSocket = new WebSocket(
+        const chatSocket = new WebSocket(
             'ws://' + window.location.host + '/ws/notifications/' + userCode + '/'
-        );
-
-        console.log('oi')
-    
-        notificationSocket.onmessage = function(e) {
+        );    
+        chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             console.log("Dados recebidos:", data);
-    
-            const fromUser = data.from_user.trim();
+            
+            // Altere de data.username para data.from_user
+            const fromUser = data.from_user ? data.from_user.trim() : null;  // Adiciona verificação
             console.log("fromUser recebido:", fromUser);
-    
-            // Criar uma lista limpa de usuários apenas com os nomes
-            const userList = Array.from(document.querySelectorAll('.user-list li')).map(li => {
-                return li.innerText.split(/\s*\d+\s*$/)[0].trim(); // Remove o número e espaços em branco
-            });
-            console.log("Lista de usuários:", userList);
-    
-            // Encontrar o elemento de usuário usando o nome
-            const userElement = Array.from(document.querySelectorAll('.user-list li')).find(li => {
-                return li.innerText.split(/\s*\d+\s*$/)[0].trim() === fromUser;
-            });
-    
-            if (userElement) {
-                let badge = userElement.querySelector('.badge');
-                if (badge) {
-                    badge.textContent = parseInt(badge.textContent) + 1; // Somar 1
+        
+            if (fromUser) {
+                // Atualizar a contagem de mensagens não lidas
+                const userElement = Array.from(document.querySelectorAll('.user-list li')).find(li => {
+                    return li.innerText.split(/\s*\d+\s*$/)[0].trim() === fromUser;
+                });
+        
+                if (userElement) {
+                    let badge = userElement.querySelector('.badge');
+                    if (badge) {
+                        badge.textContent = parseInt(badge.textContent) + 1; // Somar 1
+                    } else {
+                        userElement.innerHTML += `<span class="badge badge-warning">1</span>`; // Definir como 1
+                    }
+                    console.log("Atualizando badge:", badge ? badge.textContent : '1');
                 } else {
-                    userElement.innerHTML += `<span class="badge badge-warning">1</span>`; // Definir como 1
+                    console.log("Usuário não encontrado na lista:", fromUser);
                 }
-                console.log("Atualizando badge:", badge ? badge.textContent : '1');
             } else {
-                console.log("Usuário não encontrado na lista:", fromUser);
+                console.warn('from_user não definido na mensagem:', data);
             }
-        };
+        };        
     </script>
     
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

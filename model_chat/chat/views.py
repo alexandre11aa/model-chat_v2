@@ -22,16 +22,17 @@ def user_list(request):
     users = CustomUser.objects.exclude(id=request.user.id)  # Obtém todos os usuários
     logged_user = request.user  # Usuário logado
 
-    # Contar as mensagens não lidas de cada usuário
+    # Contar as mensagens não lidas e os arquivos não lidos de cada usuário
     unread_messages = {
-        user.id: DuoMessage.objects.filter(sender=user, receiver=logged_user, is_read=False).count()
+        user.id: DuoMessage.objects.filter(sender=user, receiver=logged_user, is_read=False).count() +
+                  DuoFile.objects.filter(sender=user, receiver=logged_user).count()  # Contar mensagens e arquivos não lidos
         for user in users
     }
 
     return render(request, 'list_chats/duo_users_page.html', {
         'users': users,
         'logged_user': logged_user,
-        'unread_messages': unread_messages
+        'unread_messages': unread_messages  # Passando a contagem combinada para o template
     })
 
 def chat_view(request, code):

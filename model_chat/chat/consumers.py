@@ -68,6 +68,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 message=message
             )
 
+            # Envia mensagem para o chat em tempo real
             await self.channel_layer.group_send(
                 self.room_name,
                 {
@@ -75,6 +76,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                     'message': message,
                     'username': sender.name,
                     'time': datetime.now().strftime("%H:%M")
+                }
+            )
+
+            # Envia notificação para o NotificationConsumer
+            await self.channel_layer.group_send(
+                f"user_notifications_{receiver.code}",
+                {
+                    'type': 'notify',
+                    'from_user': sender.name,  # Apenas o nome do usuário
                 }
             )
 
@@ -91,9 +101,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 self.room_name,
                 {
                     'type': 'send_message',
-                    'file': file_url,  # URL para download do arquivo
+                    'file': file_url,
                     'username': sender.name,
                     'time': datetime.now().strftime("%H:%M")
+                }
+            )
+
+            # Envia notificação para o NotificationConsumer
+            await self.channel_layer.group_send(
+                f"user_notifications_{receiver.code}",
+                {
+                    'type': 'notify',
+                    'from_user': sender.name,  # Apenas o nome do usuário
                 }
             )
 
@@ -121,7 +140,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print('oi')
         self.user_code = self.scope['url_route']['kwargs']['user_code']
         self.group_name = f"user_notifications_{self.user_code}"
         
