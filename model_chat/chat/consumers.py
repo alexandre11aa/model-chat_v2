@@ -55,7 +55,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         # Verifica se é uma mensagem de texto ou arquivo
         message = data_json.get('message', None)
-        file = data_json.get('file', None)  # Verifica se há um arquivo
+        file_url = data_json.get('file', None)  # Verifica se há um arquivo
+        filename = data_json.get('filename', None)  # Nome do arquivo enviado
 
         sender = await database_sync_to_async(CustomUser.objects.get)(code=self.user_code)
         receiver = await database_sync_to_async(CustomUser.objects.get)(code=self.target_code)
@@ -77,27 +78,50 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 }
             )
 
-        elif file:  # Caso seja um arquivo
-            pass # Escreva uma lógica similar ao de mensagem, para file
+        elif file_url:  # Caso seja um arquivo
+            # Salva o arquivo no banco de dados
+            await database_sync_to_async(DuoFile.objects.create)(
+                sender=sender,
+                receiver=receiver,
+                file=file_url,
+            )
+
+            # Envia a mensagem com o link do arquivo para o WebSocket
+            await self.channel_layer.group_send(
+                self.room_name,
+                {
+                    'type': 'send_message',
+                    'file': file_url,  # URL para download do arquivo
+                    'username': sender.name,
+                    'time': datetime.now().strftime("%H:%M")
+                }
+            )
 
     # Método chamado quando uma mensagem é enviada para o grupo (sala de chat)
     async def send_message(self, event):
-        message = event['message']  # Obtém a mensagem do evento
+        message = event.get('message', None)  # Obtém a mensagem do evento, se houver
+        file_url = event.get('file', None)  # Obtém o URL do arquivo, se houver
         username = event['username']  # Obtém o nome do usuário que enviou a mensagem
         time = event['time']  # Obtém o timestamp da mensagem
 
         # Envia a mensagem de volta para o cliente WebSocket no formato JSON
-        await self.send(text_data=json.dumps({
-            'message': message,  # Envia o texto da mensagem
-            'username': username,  # Envia o nome do remetente
-            'time': time  # Envia o timestamp
-        }))
-        print(f"Mensagem enviada ao cliente: {message} de {username} às {time}")
-
-        print('\nFinalizando processamento assíncrono.\n')
+        if message:
+            await self.send(text_data=json.dumps({
+                'message': message,  # Envia o texto da mensagem
+                'username': username,  # Envia o nome do remetente
+                'time': time  # Envia o timestamp
+            }))
+        elif file_url:
+            # Se for um arquivo, envia o link para download
+            await self.send(text_data=json.dumps({
+                'file': file_url,  # URL do arquivo para download
+                'username': username,  # Envia o nome do remetente
+                'time': time  # Envia o timestamp
+            }))
 
 class NotificationConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        print('oi')
         self.user_code = self.scope['url_route']['kwargs']['user_code']
         self.group_name = f"user_notifications_{self.user_code}"
         

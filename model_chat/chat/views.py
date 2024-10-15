@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView as AuthLoginView
 from django.urls import reverse
@@ -52,16 +54,23 @@ def chat_view(request, code):
     # Marcar as mensagens recebidas como lidas
     DuoMessage.objects.filter(receiver=request.user, sender=target_user, is_read=False).update(is_read=True)
 
+    # Combinar mensagens e arquivos em uma lista
+    combined = []
+    for message in messages:
+        combined.append({'type': 'message', 'content': message})
+    for file in files:
+        combined.append({'type': 'file', 'content': file})
+
+    # Ordenar a lista combinada pelo timestamp
+    combined.sort(key=lambda x: x['content'].timestamp)
+
     context = {
         'target_user': target_user,
-        'messages': messages,
-        'files': files,
+        'combined': combined,  # Passando a lista combinada para o contexto
         'logged_user': request.user,
     }
 
     return render(request, 'chats/duo_chat_page.html', context)
-
-import os
 
 def upload_file(request):
 

@@ -54,6 +54,8 @@
         const notificationSocket = new WebSocket(
             'ws://' + window.location.host + '/ws/notifications/' + userCode + '/'
         );
+
+        console.log('oi')
     
         notificationSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);

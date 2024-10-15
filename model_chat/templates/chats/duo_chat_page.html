@@ -35,9 +35,13 @@
         <h1 class="text-center">Chat com: {{ target_user.name }}</h1>
 
         <div id="chat-log" class="mb-3 p-2">
-            {% for message in messages %}
+            {% for item in combined %}
                 <div>
-                    <strong>{{ message.sender.name }}:</strong> {{ message.message }} <em>({{ message.timestamp|date:"H:i" }})</em>
+                    {% if item.type == 'message' %}
+                        <strong>{{ item.content.sender.name }}:</strong> {{ item.content.message }} <em>({{ item.content.timestamp|date:"H:i" }})</em>
+                    {% elif item.type == 'file' %}
+                        <strong>{{ item.content.sender.name }}:</strong> <a href="{{ item.content.file.url }}" download="{{ item.content.filename }}">Download {{ item.content.filename }}</a> <em>({{ item.content.timestamp|date:"H:i" }})</em>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
