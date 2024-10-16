@@ -27,7 +27,7 @@ def create_group_chat(request):
 
     users = CustomUser.objects.exclude(id=request.user.id)  # Obtém todos os usuários
     
-    return render(request, 'create_group_chat.html', {'users': users})
+    return render(request, 'auth/create_group_chat.html', {'users': users})
 
 def groups_list(request):
     
