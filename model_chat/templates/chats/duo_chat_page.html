@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat with {{ target_user.name }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> <!-- Ícone de clipe de papel -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         #chat-log {
             border: 1px solid #ddd;
@@ -18,17 +18,36 @@
             background-color: #f1f1f1;
         }
         #chat-message-input {
-            width: calc(100% - 120px); /* Ajuste para incluir os botões */
+            width: calc(100% - 120px);
         }
         .input-group-append .btn {
-            height: 100%; /* Garante que os botões tenham a mesma altura */
+            height: 100%;
         }
         .btn-secondary {
-            background-color: #6c757d; /* Cor do botão de procurar */
-            border: none; /* Remove a borda do botão */
+            background-color: #6c757d;
+            border: none;
+        }
+        .btn-terciary {
+            background-color: #6c757d;
+            border: none;
         }
         #chat-file-input {
-            display: none; /* Esconde o campo de arquivo */
+            display: none;
+        }
+        /* Estilo do balão de emojis */
+        #emoji-container {
+            display: none; /* Oculto por padrão */
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .emoji {
+            cursor: pointer;
+            margin: 5px;
+            font-size: 24px; /* Tamanho do emoji */
         }
     </style>
 </head>
@@ -52,12 +71,51 @@
             <input type="file" id="chat-file-input" class="form-control-file" accept="image/*,video/*,application/pdf">
             <input type="text" id="chat-message-input" class="form-control" autocomplete="off" placeholder="Type your message...">
             <div class="input-group-append">
-                <button class="btn btn-secondary" id="send-file"><i class="fas fa-paperclip"></i><!-- Ícone de clipe de papel --></button>
-                <button class="btn btn-secondary" id="send-file"><i class="fas fa-paperclip"></i><!-- Ícone de clipe de papel --></button>
-                <button id="send-message" class="btn btn-primary"><i class="fas fa-paper-plane"></i><!-- Ícone de avião --></button>
+                <button id="send-emoji" class="btn btn-secondary"><i class="fas fa-smile"></i></button>
+                <button class="btn btn-secondary" id="send-file"><i class="fas fa-paperclip"></i></button>
+                <button id="send-message" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
+
+        <!-- Contêiner de emojis -->
+        <div id="emoji-container">
+            <span class="emoji" data-emoji="😀">😀</span>
+            <span class="emoji" data-emoji="😂">😂</span>
+            <span class="emoji" data-emoji="❤️">❤️</span>
+            <span class="emoji" data-emoji="😢">😢</span>
+            <span class="emoji" data-emoji="😎">😎</span>
+            <span class="emoji" data-emoji="👍">👍</span>
+        </div>
     </div>
+
+    <script>
+        const emojiButton = document.getElementById('send-emoji');
+        const emojiContainer = document.getElementById('emoji-container');
+        const chatMessageInput = document.getElementById('chat-message-input');
+
+        // Mostra ou esconde o contêiner de emojis ao clicar no botão
+        emojiButton.onclick = function(event) {
+            event.stopPropagation(); // Evita que o evento clique se propague
+            const rect = emojiButton.getBoundingClientRect(); // Obtém a posição do botão
+            emojiContainer.style.top = (rect.top + window.scrollY - emojiContainer.offsetHeight) + 'px'; // Posiciona acima do botão
+            emojiContainer.style.left = (rect.left + window.scrollX) + 'px'; // Alinha ao botão
+            emojiContainer.style.display = (emojiContainer.style.display === 'block') ? 'none' : 'block'; // Alterna a visibilidade
+        };
+
+        // Adiciona o emoji ao campo de mensagem ao clicar no emoji
+        document.querySelectorAll('.emoji').forEach(function(emoji) {
+            emoji.onclick = function() {
+                chatMessageInput.value += emoji.getAttribute('data-emoji'); // Adiciona o emoji à mensagem
+                emojiContainer.style.display = 'none'; // Esconde o contêiner de emojis após a seleção
+                chatMessageInput.focus(); // Foca no campo de mensagem
+            };
+        });
+
+        // Fecha o contêiner de emojis ao clicar fora
+        document.addEventListener('click', function() {
+            emojiContainer.style.display = 'none';
+        });
+    </script>
 
     <script>
         const loggedUserCode = "{{ request.user.code }}";

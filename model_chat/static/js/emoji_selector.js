@@ -1,22 +1,26 @@
-// Função para abrir o seletor de emoticons
-function toggleEmojiPicker() {
-    const emojiPicker = document.getElementById('emoji-picker');
-    emojiPicker.classList.toggle('d-none'); // Alterna a visibilidade do seletor
-}
+const emojiButton = document.getElementById('send-emoji');
+const emojiContainer = document.getElementById('emoji-container');
+const chatMessageInput = document.getElementById('chat-message-input');
 
-// Função para inserir o emoticon no campo de entrada
-function insertEmoji(emoji) {
-    const messageInput = document.getElementById('chat-message-input');
-    messageInput.value += emoji; // Adiciona o emoticon ao campo de entrada
-}
+// Mostra ou esconde o contêiner de emojis ao clicar no botão
+emojiButton.onclick = function(event) {
+    event.stopPropagation(); // Evita que o evento clique se propague
+    const rect = emojiButton.getBoundingClientRect(); // Obtém a posição do botão
+    emojiContainer.style.top = (rect.top + window.scrollY - emojiContainer.offsetHeight) + 'px'; // Posiciona acima do botão
+    emojiContainer.style.left = (rect.left + window.scrollX) + 'px'; // Alinha ao botão
+    emojiContainer.style.display = (emojiContainer.style.display === 'block') ? 'none' : 'block'; // Alterna a visibilidade
+};
 
-// Adiciona eventos ao botão de emoticons
-document.getElementById('emoji-button').onclick = toggleEmojiPicker;
-
-// Adiciona eventos para cada emoticon
-document.querySelectorAll('.emoji').forEach(emoji => {
-    emoji.onclick = function () {
-        insertEmoji(this.innerHTML);
-        toggleEmojiPicker(); // Fecha o seletor após selecionar
+// Adiciona o emoji ao campo de mensagem ao clicar no emoji
+document.querySelectorAll('.emoji').forEach(function(emoji) {
+    emoji.onclick = function() {
+        chatMessageInput.value += emoji.getAttribute('data-emoji'); // Adiciona o emoji à mensagem
+        emojiContainer.style.display = 'none'; // Esconde o contêiner de emojis após a seleção
+        chatMessageInput.focus(); // Foca no campo de mensagem
     };
+});
+
+// Fecha o contêiner de emojis ao clicar fora
+document.addEventListener('click', function() {
+    emojiContainer.style.display = 'none';
 });
