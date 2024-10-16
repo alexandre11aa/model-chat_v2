@@ -24,8 +24,8 @@ def user_list(request):
 
     # Contar as mensagens não lidas e os arquivos não lidos de cada usuário
     unread_messages = {
-        user.id: DuoMessage.objects.filter(sender=user, receiver=logged_user, is_read=False).count() +
-                  DuoFile.objects.filter(sender=user, receiver=logged_user).count()  # Contar mensagens e arquivos não lidos
+        user.id: (DuoMessage.objects.filter(sender=user, receiver=logged_user, is_read=False).count() +
+                  DuoFile.objects.filter(sender=user, receiver=logged_user, is_read=False).count())  # Contar mensagens e arquivos não lidos
         for user in users
     }
 
@@ -54,6 +54,9 @@ def chat_view(request, code):
 
     # Marcar as mensagens recebidas como lidas
     DuoMessage.objects.filter(receiver=request.user, sender=target_user, is_read=False).update(is_read=True)
+
+    # Marcar os arquivos recebidos como lidos
+    DuoFile.objects.filter(receiver=request.user, sender=target_user, is_read=False).update(is_read=True)
 
     # Combinar mensagens e arquivos em uma lista
     combined = []
