@@ -40,7 +40,7 @@
                     {% if item.type == 'message' %}
                         <strong>{{ item.content.sender.name }}:</strong> {{ item.content.message }} <em>({{ item.content.timestamp|date:"H:i" }})</em>
                     {% elif item.type == 'file' %}
-                        <strong>{{ item.content.sender.name }}:</strong> <a href="{{ item.content.file.url }}" download="{{ item.content.filename }}">Download {{ item.content.filename }}</a> <em>({{ item.content.timestamp|date:"H:i" }})</em>
+                        <strong>{{ item.content.sender.name }}:</strong> <a href="{{ item.content.file.url }}" download="{{ item.content.filename }}">{{ item.content.filename }}</a> <em>({{ item.content.timestamp|date:"H:i" }})</em>
                     {% endif %}
                 </div>
             {% endfor %}
@@ -107,19 +107,19 @@
         
             if (file) {
                 const formData = new FormData();
-                formData.append('file', file);
-                formData.append('filename', file.name);
-        
+                formData.append('file', file);  // Anexa o arquivo
+                formData.append('filename', file.name);  // Usa file.name para obter o nome do arquivo
+            
                 // Enviar o arquivo para o backend (upload)
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', '/upload-file/');
                 xhr.setRequestHeader('X-CSRFToken', csrftoken);
-        
+            
                 xhr.onload = function() {
                     if (xhr.status === 200) {
                         const response = JSON.parse(xhr.responseText);
                         const fileUrl = `/uploads/${response.filename}`;  // Supondo que o arquivo seja salvo na pasta 'uploads'
-        
+            
                         // Enviar o arquivo via WebSocket para o chat
                         chatSocket.send(JSON.stringify({
                             'file': fileUrl,
@@ -131,7 +131,7 @@
                         console.error('Erro ao enviar o arquivo.');
                     }
                 };
-        
+            
                 xhr.send(formData);  // Envia o FormData
             }
         };
@@ -161,7 +161,7 @@
             const timeDisplay = data.time ? ` (${data.time})` : '';
             
             if (data.file) {
-                newMessage.innerHTML = `<strong>${data.username}:</strong> <a href="${data.file}" download="${data.filename}">Download ${data.filename}</a>${timeDisplay}`;
+                newMessage.innerHTML = `<strong>${data.username}:</strong> <a href="${data.file}" download="${data.filename}">${data.filename}</a>${timeDisplay}`;
             } else {
                 newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}${timeDisplay}`;
             }

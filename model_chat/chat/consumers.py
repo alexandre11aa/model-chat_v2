@@ -94,6 +94,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 sender=sender,
                 receiver=receiver,
                 file=file_url,
+                filename=filename,
             )
 
             # Envia a mensagem com o link do arquivo para o WebSocket
@@ -102,6 +103,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 {
                     'type': 'send_message',
                     'file': file_url,
+                    'filename': filename,
                     'username': sender.name,
                     'time': datetime.now().strftime("%H:%M")
                 }
@@ -130,12 +132,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'username': username,  # Envia o nome do remetente
                 'time': time  # Envia o timestamp
             }))
+        
+        # Se for um arquivo, envia o link para download
         elif file_url:
-            # Se for um arquivo, envia o link para download
+            filename = event['filename']  # Obtém o nome do arquivo da mensagem
             await self.send(text_data=json.dumps({
                 'file': file_url,  # URL do arquivo para download
                 'username': username,  # Envia o nome do remetente
-                'time': time  # Envia o timestamp
+                'time': time,  # Envia o timestamp
+                'filename': filename
             }))
 
 class NotificationConsumer(AsyncWebsocketConsumer):

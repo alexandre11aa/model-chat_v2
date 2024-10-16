@@ -18,6 +18,7 @@ class DuoMessage(Duo):
 
 class DuoFile(Duo):
     file = models.FileField(upload_to='uploads/', blank=True, null=True)
+    filename = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f'File from {self.sender.name} to {self.receiver.name}'
