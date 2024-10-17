@@ -7,24 +7,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grupo - {{ group_chat.name }}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        #chat-log {
-            border: 1px solid #ddd;
-            padding: 10px;
-            height: 300px;
-            overflow-y: scroll;
-            margin-bottom: 10px;
-            background-color: #f1f1f1;
-        }
-        #chat-message-input {
-            width: calc(100% - 80px);
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/group_chat.css' %}">
 </head>
 <body>
     <div class="container mt-5">
         <h1 class="text-center">Grupo - {{ group_chat.name }}</h1>
 
+        <!-- Div para armazenar os dados do chat -->
+        <div id="chat-data" data-group-id="{{ group_chat.id }}" data-logged-user-id="{{ logged_user.id }}"></div>
+
+        <!-- Div para o log do chat -->
         <div id="chat-log" class="mb-3 p-2">
             {% for message in messages %}
                 <div id="message-{{ message.id }}">
@@ -41,36 +33,6 @@
         </div>
     </div>
 
-    <script>
-        const chatSocket = new WebSocket(
-            'ws://' + window.location.host + '/ws/chat/group/{{ group_chat.id }}/'
-        );
-
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            const message = data.message;
-            const sender = message.sender;
-            const timestamp = new Date(message.timestamp);
-            const chatLog = document.getElementById('chat-log');
-            const newMessage = document.createElement('div');
-            newMessage.innerHTML = `<strong>${sender}:</strong> ${message.message} <em>(${timestamp.getHours()}:${timestamp.getMinutes()})</em>`;
-            chatLog.appendChild(newMessage);
-            chatLog.scrollTop = chatLog.scrollHeight;  // Auto scroll to bottom
-        };
-
-        document.getElementById('send-message').onclick = function(e) {
-            const messageInputDom = document.getElementById('chat-message-input');
-            const message = messageInputDom.value;
-
-            chatSocket.send(JSON.stringify({
-                'message': message,
-                'sender_id': '{{ logged_user.id }}'
-            }));
-
-            messageInputDom.value = '';
-        };
-    </script>
-
-    <!-- <script src="{% static 'js/group_chat.js' %}"></script> -->
+    <script src="{% static 'js/group_chat.js' %}"></script>
 </body>
 </html>

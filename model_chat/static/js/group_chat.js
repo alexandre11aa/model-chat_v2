@@ -1,5 +1,10 @@
+// Acessar as variáveis de dados através de 'data-*' atributos no HTML
+const chatData = document.getElementById('chat-data');
+const groupChatId = chatData.getAttribute('data-group-id');
+const loggedUserId = chatData.getAttribute('data-logged-user-id');
+
 const chatSocket = new WebSocket(
-    'ws://' + window.location.host + '/ws/chat/group/{{ group_chat.id }}/'
+    'ws://' + window.location.host + '/ws/chat/group/' + groupChatId + '/'
 );
 
 chatSocket.onmessage = function(e) {
@@ -20,7 +25,7 @@ document.getElementById('send-message').onclick = function(e) {
 
     chatSocket.send(JSON.stringify({
         'message': message,
-        'sender_id': '{{ logged_user.id }}'
+        'sender_id': loggedUserId
     }));
 
     messageInputDom.value = '';

@@ -1,0 +1,11 @@
+#chat-log {
+    border: 1px solid #ddd;
+    padding: 10px;
+    height: 300px;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+    background-color: #f1f1f1;
+}
+#chat-message-input {
+    width: calc(100% - 80px);
+}

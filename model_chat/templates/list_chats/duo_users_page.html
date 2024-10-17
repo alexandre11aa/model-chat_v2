@@ -7,28 +7,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/duo_users.css' %}">
     <title>Lista de Usuários</title>
-    <style>
-        .user-list {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .user-list li {
-            padding: 15px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .user-list li:hover {
-            background-color: #f0f0f0;
-        }
-    </style>
 </head>
-<body class="bg-light">
+<body class="bg-light" data-user-code="{{ logged_user.code }}">
     <div class="container mt-5">
         <h1 class="text-center mb-4">Lista de Usuários</h1>
 
@@ -49,44 +31,8 @@
             {% endfor %}
         </ul>
     </div>
-
-    <script>
-        const userCode = "{{ logged_user.code }}";
-        const chatSocket = new WebSocket(
-            'ws://' + window.location.host + '/ws/notifications/' + userCode + '/'
-        );    
-        chatSocket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            console.log("Dados recebidos:", data);
-            
-            // Altere de data.username para data.from_user
-            const fromUser = data.from_user ? data.from_user.trim() : null;  // Adiciona verificação
-            console.log("fromUser recebido:", fromUser);
-        
-            if (fromUser) {
-                // Atualizar a contagem de mensagens não lidas
-                const userElement = Array.from(document.querySelectorAll('.user-list li')).find(li => {
-                    return li.innerText.split(/\s*\d+\s*$/)[0].trim() === fromUser;
-                });
-        
-                if (userElement) {
-                    let badge = userElement.querySelector('.badge');
-                    if (badge) {
-                        badge.textContent = parseInt(badge.textContent) + 1; // Somar 1
-                    } else {
-                        userElement.innerHTML += `<span class="badge badge-warning">1</span>`; // Definir como 1
-                    }
-                    console.log("Atualizando badge:", badge ? badge.textContent : '1');
-                } else {
-                    console.log("Usuário não encontrado na lista:", fromUser);
-                }
-            } else {
-                console.warn('from_user não definido na mensagem:', data);
-            }
-        };        
-    </script>
     
-    <!-- <script src="{% static 'js/duo_users.js' %}"></script> -->
+    <script src="{% static 'js/duo_users.js' %}"></script>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

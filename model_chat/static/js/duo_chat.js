@@ -1,5 +1,5 @@
-const loggedUserCode = "{{ request.user.code }}";
-const targetUserCode = "{{ target_user.code }}";
+const loggedUserCode = document.body.getAttribute('data-user-code');
+const targetUserCode = document.body.getAttribute('data-target-user-code');
 
 const chatSocket = new WebSocket(
     'ws://' + window.location.host + '/ws/chat/' + loggedUserCode + '/' + targetUserCode + '/'
@@ -93,15 +93,32 @@ function sendMessage() {
     messageInputDom.value = '';  // Limpa o campo de entrada
 }
 
+// Função de envio de mensagens assíncrono para o chat    
 function handleIncomingMessage(event) {
     const data = JSON.parse(event.data);
     const chatLog = document.getElementById('chat-log');
 
     const newMessage = document.createElement('div');
     const timeDisplay = data.time ? ` (${data.time})` : '';
-    
+
     if (data.file) {
-        newMessage.innerHTML = `<strong>${data.username}:</strong> <a href="${data.file}" download="${data.filename}">${data.filename}</a>${timeDisplay}`;
+        const fileExtension = data.filename.split('.').pop().toLowerCase(); // Obtemos a extensão do arquivo
+        if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+            // Se for uma imagem, criamos o HTML para exibir a imagem
+            newMessage.innerHTML = `
+                <strong>${data.username}:</strong>
+                <div>
+                    <img src="${data.file}" alt="${data.filename}" style="max-width: 200px; max-height: 200px;"><br>
+                    <a href="${data.file}" download="${data.filename}">${data.filename}</a>${timeDisplay}
+                </div>
+            `;
+        } else {
+            // Para outros tipos de arquivos, apenas um link
+            newMessage.innerHTML = `
+                <strong>${data.username}:</strong>
+                <a href="${data.file}" download="${data.filename}">${data.filename}</a>${timeDisplay}
+            `;
+        }
     } else {
         newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}${timeDisplay}`;
     }

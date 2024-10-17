@@ -1,0 +1,17 @@
+.group-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.group-list li {
+    padding: 15px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.group-list li:hover {
+    background-color: #f0f0f0;
+}

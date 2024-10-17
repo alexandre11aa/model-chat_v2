@@ -1,4 +1,4 @@
-const userCode = "{{ logged_user.code }}";
+const userCode = document.body.getAttribute('data-user-code');
 const chatSocket = new WebSocket(
     'ws://' + window.location.host + '/ws/notifications/' + userCode + '/'
 );    

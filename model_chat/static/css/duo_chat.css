@@ -1,0 +1,40 @@
+#chat-log {
+    border: 1px solid #ddd;
+    padding: 10px;
+    height: 300px;
+    overflow-y: scroll;
+    margin-bottom: 10px;
+    background-color: #f1f1f1;
+}
+#chat-message-input {
+    width: calc(100% - 120px);
+}
+.input-group-append .btn {
+    height: 100%;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+}
+.btn-terciary {
+    background-color: #6c757d;
+    border: none;
+}
+#chat-file-input {
+    display: none;
+}
+/* Estilo do balão de emojis */
+#emoji-container {
+    display: none; /* Oculto por padrão */
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+.emoji {
+    cursor: pointer;
+    margin: 5px;
+    font-size: 24px; /* Tamanho do emoji */
+}
