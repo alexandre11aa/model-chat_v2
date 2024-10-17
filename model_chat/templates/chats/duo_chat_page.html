@@ -1,3 +1,4 @@
+{% load custom_filters %}
 {% load static %}
 
 <!DOCTYPE html>
@@ -61,7 +62,15 @@
                     {% if item.type == 'message' %}
                         <strong>{{ item.content.sender.name }}:</strong> {{ item.content.message }} <em>({{ item.content.timestamp|date:"H:i" }})</em>
                     {% elif item.type == 'file' %}
-                        <strong>{{ item.content.sender.name }}:</strong> <a href="{{ item.content.file.url }}" download="{{ item.content.filename }}">{{ item.content.filename }}</a> <em>({{ item.content.timestamp|date:"H:i" }})</em>
+                        <strong>{{ item.content.sender.name }}:</strong>
+                        {% if item.content.filename|endswith:".jpg" or item.content.filename|endswith:".png" or item.content.filename|endswith:".gif" %}
+                            <div>
+                                <img src="{{ item.content.file.url }}" alt="{{ item.content.filename }}" style="max-width: 200px; max-height: 200px;"><br>
+                                <a href="{{ item.content.file.url }}" download="{{ item.content.filename }}">{{ item.content.filename }}</a> <em>({{ item.content.timestamp|date:"H:i" }})</em>
+                            </div>
+                        {% else %}
+                            <a href="{{ item.content.file.url }}" download="{{ item.content.filename }}">{{ item.content.filename }}</a> <em>({{ item.content.timestamp|date:"H:i" }})</em>
+                        {% endif %}
                     {% endif %}
                 </div>
             {% endfor %}
@@ -212,20 +221,37 @@
     
             messageInputDom.value = '';  // Limpa o campo de entrada
         }
-    
+
+        // Função de envio de mensagens assíncrono para o chat    
         function handleIncomingMessage(event) {
             const data = JSON.parse(event.data);
             const chatLog = document.getElementById('chat-log');
-    
+
             const newMessage = document.createElement('div');
             const timeDisplay = data.time ? ` (${data.time})` : '';
-            
+
             if (data.file) {
-                newMessage.innerHTML = `<strong>${data.username}:</strong> <a href="${data.file}" download="${data.filename}">${data.filename}</a>${timeDisplay}`;
+                const fileExtension = data.filename.split('.').pop().toLowerCase(); // Obtemos a extensão do arquivo
+                if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                    // Se for uma imagem, criamos o HTML para exibir a imagem
+                    newMessage.innerHTML = `
+                        <strong>${data.username}:</strong>
+                        <div>
+                            <img src="${data.file}" alt="${data.filename}" style="max-width: 200px; max-height: 200px;"><br>
+                            <a href="${data.file}" download="${data.filename}">${data.filename}</a>${timeDisplay}
+                        </div>
+                    `;
+                } else {
+                    // Para outros tipos de arquivos, apenas um link
+                    newMessage.innerHTML = `
+                        <strong>${data.username}:</strong>
+                        <a href="${data.file}" download="${data.filename}">${data.filename}</a>${timeDisplay}
+                    `;
+                }
             } else {
                 newMessage.innerHTML = `<strong>${data.username}:</strong> ${data.message}${timeDisplay}`;
             }
-    
+
             chatLog.appendChild(newMessage);
             chatLog.scrollTop = chatLog.scrollHeight;  // Rolagem automática
         }
