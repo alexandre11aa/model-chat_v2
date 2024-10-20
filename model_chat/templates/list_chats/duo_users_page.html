@@ -18,15 +18,27 @@
         
         <div class="text-center mb-4">
             <a href="{% url 'groups_list' %}" class="btn btn-primary">Ir para Grupos</a>
+            {% if logged_user.is_superuser %}
+                <a href="{% url 'register_user' %}" class="btn btn-success ml-2">Registrar Usuário</a>
+            {% endif %}
         </div>
 
         <ul class="user-list list-group">
             {% for user in users %}
-                <li class="list-group-item" data-user-code="{{ user.code }}" onclick="window.location.href='{% url 'chat-page' user.code %}'">
-                    {{ user.name }}
-                    {% if unread_messages|get_item:user.id %}
-                        <span class="badge badge-warning">{{ unread_messages|get_item:user.id }}</span>
-                    {% endif %}
+                <li class="list-group-item d-flex justify-content-between align-items-center" data-user-code="{{ user.code }}" onclick="window.location.href='{% url 'chat-page' user.code %}'">
+                    <span>{{ user.name }}</span>
+                    <div>
+                        {% if unread_messages|get_item:user.id %}
+                            <span class="badge badge-warning">{{ unread_messages|get_item:user.id }}</span>
+                        {% endif %}
+                        {% if logged_user.is_superuser %}
+                            <a href="{% url 'update_user' user.id %}" class="btn btn-warning btn-sm">Editar</a>
+                            <form action="{% url 'delete_user' user.id %}" method="POST" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">Excluir</button>
+                            </form>
+                        {% endif %}
+                    </div>
                 </li>
             {% endfor %}
         </ul>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuário</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">{% if form.instance.pk %} Atualizar Usuário {% else %} Registro de Usuário {% endif %}</h2>
+
+        <!-- Início do Formulário -->
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_matricula" class="form-label">Matrícula</label>
+                {{ form.matricula }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_name" class="form-label">Nome Completo</label>
+                {{ form.name }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_sexo" class="form-label">Sexo</label>
+                {{ form.sexo }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_email" class="form-label">Email</label>
+                {{ form.email }}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_photo" class="form-label">Foto</label>
+                <br>{{ form.photo }}
+            </div>
+
+            <!-- Botão de Envio -->
+            <button type="submit" class="btn btn-primary">{% if form.instance.pk %} Atualizar {% else %} Registrar {% endif %}</button>
+        </form>
+        <!-- Fim do Formulário -->
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

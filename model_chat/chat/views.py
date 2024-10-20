@@ -19,7 +19,8 @@ class LoginView(AuthLoginView):
         return reverse('user_list')
 
 def user_list(request):
-    users = CustomUser.objects.exclude(id=request.user.id)  # Obtém todos os usuários
+   #users = CustomUser.objects.filter(deleted_at__isnull=True, is_active=True).exclude(id=request.user.id)
+    users = CustomUser.objects.filter(is_active=True).exclude(id=request.user.id)
     logged_user = request.user  # Usuário logado
 
     # Contar as mensagens não lidas e os arquivos não lidos de cada usuário

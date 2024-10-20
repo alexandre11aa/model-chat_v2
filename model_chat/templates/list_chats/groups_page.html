@@ -17,7 +17,9 @@
 
         <!-- Botão para ir para a página de criação de grupos -->
         <div class="text-center mb-4">
-            <a href="{% url 'create_group_chat' %}" class="btn btn-primary">Criar Novo Grupo</a>
+            {% if logged_user.is_superuser %}
+                <a href="{% url 'create_group_chat' %}" class="btn btn-primary">Criar Novo Grupo</a>
+            {% endif %}
         </div>
 
         <ul class="group-list list-group mt-4">  <!-- Adicionada a classe mt-4 aqui -->
