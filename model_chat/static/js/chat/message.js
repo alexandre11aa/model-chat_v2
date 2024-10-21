@@ -10,6 +10,7 @@ export const handleIncomingMessage = (event, loggedUserCode) => {
 
     if (data.file) {  // Se a mensagem contém um arquivo
         const fileExtension = data.filename.split('.').pop().toLowerCase();  // Obtém a extensão do arquivo
+    
         if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
             // Se for uma imagem, cria o HTML para exibir a imagem
             newMessage.innerHTML = `
@@ -17,6 +18,18 @@ export const handleIncomingMessage = (event, loggedUserCode) => {
                 <div>
                     <img src="${data.file}" alt="${data.filename}" style="max-width: 200px; max-height: 200px;"><br>
                     <a href="${data.file}" download="${data.filename}">${data.filename}</a>${timeDisplay}
+                </div>
+            `;
+        } else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
+            // Se for um arquivo de áudio, cria o HTML para exibir o player de áudio
+            newMessage.innerHTML = `
+                <strong>${data.username}:</strong>
+                <div>
+                    <audio controls>
+                        <source src="${data.file}" type="audio/mpeg">
+                        Seu navegador não suporta o elemento de áudio.
+                    </audio>
+                    <!-- <br><a href="${data.file}" download="${data.filename}">${data.filename}</a>${timeDisplay} -->
                 </div>
             `;
         } else {

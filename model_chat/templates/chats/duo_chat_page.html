@@ -27,6 +27,14 @@
                                 <img src="{{ item.content.file.url }}" alt="{{ item.content.filename }}" style="max-width: 200px; max-height: 200px;"><br>
                                 <a href="{{ item.content.file.url }}" download="{{ item.content.filename }}">{{ item.content.filename }}</a> <em>({{ item.content.timestamp|date:"H:i" }})</em>
                             </div>
+                        {% elif item.content.filename|endswith:".mp3" or item.content.filename|endswith:".wav" or item.content.filename|endswith:".ogg" %}
+                            <div>
+                                <audio controls>
+                                    <source src="{{ item.content.file.url }}" type="audio/mpeg">
+                                    Seu navegador não suporta o elemento de áudio.
+                                </audio>
+                                <!-- <br><a href="{{ item.content.file.url }}" download="{{ item.content.filename }}">{{ item.content.filename }}</a> <em>({{ item.content.timestamp|date:"H:i" }})</em> -->
+                            </div>
                         {% else %}
                             <a href="{{ item.content.file.url }}" download="{{ item.content.filename }}">{{ item.content.filename }}</a> <em>({{ item.content.timestamp|date:"H:i" }})</em>
                         {% endif %}
@@ -36,7 +44,7 @@
         </div>
 
         <div class="input-group">
-            <input type="file" id="chat-file-input" class="form-control-file" accept="image/*,video/*,application/pdf">
+            <input type="file" id="chat-file-input" class="form-control-file" accept="image/*,video/*,application/pdf,audio/*">
             <input type="text" id="chat-message-input" class="form-control" autocomplete="off" placeholder="Type your message...">
             <div class="input-group-append">
                 <button id="send-emoji" class="btn btn-secondary"><i class="fas fa-smile"></i></button>
