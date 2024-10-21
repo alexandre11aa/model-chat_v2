@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'css/duo_users.css' %}">
+    <link rel="stylesheet" href="{% static 'css/list_chats/duo_users.css' %}">
     <title>Lista de Usuários</title>
 </head>
 <body class="bg-light" data-user-code="{{ logged_user.code }}">
@@ -25,21 +25,25 @@
 
         <ul class="user-list list-group">
             {% for user in users %}
-                <li class="list-group-item d-flex justify-content-between align-items-center" data-user-code="{{ user.code }}" onclick="window.location.href='{% url 'chat-page' user.code %}'">
-                    <span>{{ user.name }}</span>
-                    <div>
-                        {% if unread_messages|get_item:user.id %}
-                            <span class="badge badge-warning">{{ unread_messages|get_item:user.id }}</span>
-                        {% endif %}
-                        {% if logged_user.is_superuser %}
+                <div class="user-item-container mb-2" style="border: 1px solid #ddd; border-radius: 10px; padding: 10px;">
+                    <li class="list-group-item d-flex justify-content-between align-items-center user-info" data-user-code="{{ user.code }}" onclick="window.location.href='{% url 'chat-page' user.code %}'">
+                        <span>{{ user.name }}</span>
+                        <div>
+                            {% if unread_messages|get_item:user.id %}
+                                <span class="badge badge-warning">{{ unread_messages|get_item:user.id }}</span>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% if logged_user.is_superuser %}
+                        <div class="action-buttons">
                             <a href="{% url 'update_user' user.id %}" class="btn btn-warning btn-sm">Editar</a>
                             <form action="{% url 'delete_user' user.id %}" method="POST" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este usuário?')">Excluir</button>
                             </form>
-                        {% endif %}
-                    </div>
-                </li>
+                        </div>
+                    {% endif %}
+                </div>
             {% endfor %}
         </ul>
     </div>
