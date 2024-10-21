@@ -1,4 +1,4 @@
-// Algoritmo completo da pasta "chat", configurado em um único arquivo
+// Algoritmo completo da pasta "chat", configurado em um único arquivo (SEM A FUNÇÃO DE MANDAR AUDIO)
 
 const loggedUserCode = document.body.getAttribute('data-user-code');
 const targetUserCode = document.body.getAttribute('data-target-user-code');

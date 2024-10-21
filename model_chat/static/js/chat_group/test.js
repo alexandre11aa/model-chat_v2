@@ -1,3 +1,5 @@
+// Algoritmo completo da pasta "chat_group", configurado em um único arquivo
+
 // Acessar as variáveis de dados através de 'data-*' atributos no HTML
 const chatData = document.getElementById('chat-data');
 const groupChatId = chatData.getAttribute('data-group-id');

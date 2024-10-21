@@ -12,8 +12,8 @@ import os
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
-from chat import routing as chat_routing
-from chat_group import routing as chat_group_routing
+from chat import routings as chat_routing
+from chat_group import routings as chat_group_routing
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'model_chat.settings')
 

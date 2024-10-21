@@ -1,8 +1,9 @@
-// duochat.js
+// duo_chat.js
 
 import { chatSocket, handleSocketClose } from './socket.js';  // Importa as funções do módulo socket.js
 import { handleIncomingMessage } from './message.js';  // Importa a função do módulo message.js
 import { getCookie, uploadFile } from './fileUpload.js';  // Importa funções do módulo fileUpload.js
+import { startRecording, stopRecording, handleMouseLeave } from './audioRecorder.js';  // Importa as funções do módulo audioRecorder.js
 
 const loggedUserCode = document.body.getAttribute('data-user-code');  // Obtém o código do usuário logado
 const targetUserCode = document.body.getAttribute('data-target-user-code');  // Obtém o código do usuário alvo
@@ -56,3 +57,9 @@ function sendMessage() {
 
     messageInputDom.value = '';  // Limpa o campo de entrada
 }
+
+// Configuração do botão de gravação de áudio
+const sendAudioButton = document.getElementById('send-audio');
+sendAudioButton.addEventListener('mousedown', () => startRecording(sendAudioButton, socket, loggedUserCode));
+sendAudioButton.addEventListener('mouseup', () => stopRecording(sendAudioButton, socket, loggedUserCode));
+sendAudioButton.addEventListener('mouseleave', () => handleMouseLeave(sendAudioButton));
