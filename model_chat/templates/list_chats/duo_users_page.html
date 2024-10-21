@@ -17,9 +17,9 @@
         <p class="text-center">Logado como: <strong>{{ logged_user.name }}</strong></p>
         
         <div class="text-center mb-4">
-            <a href="{% url 'groups_list' %}" class="btn btn-primary">Ir para Grupos</a>
+            <a href="{% url 'groups_list' %}" class="btn btn-primary">Grupos</a>
             {% if logged_user.is_superuser %}
-                <a href="{% url 'register_user' %}" class="btn btn-success ml-2">Registrar Usuário</a>
+                <a href="{% url 'register_user' %}" class="btn btn-success ml-2">Registrar</a>
             {% endif %}
         </div>
 

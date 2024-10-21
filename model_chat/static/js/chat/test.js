@@ -1,3 +1,5 @@
+// Algoritmo completo da pasta "chat", configurado em um único arquivo
+
 const loggedUserCode = document.body.getAttribute('data-user-code');
 const targetUserCode = document.body.getAttribute('data-target-user-code');
 
