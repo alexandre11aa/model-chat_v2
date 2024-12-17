@@ -4,7 +4,7 @@
 set -e
 
 # Espera o PostgreSQL estar pronto para aceitar conexões
-wait_psql.sh
+wait_mysql.sh
 
 # Coleta os arquivos estáticos do Django
 collectstatic.sh
@@ -13,7 +13,7 @@ collectstatic.sh
 migrate.sh
 
 # Injeta os dados teste (OPCIONAL)
-python manage.py shell < /scripts/datas/model_database.py
+datas.sh
 
 # Inicia o servidor de desenvolvimento do Django
 runserver.sh

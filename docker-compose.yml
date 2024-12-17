@@ -1,22 +1,24 @@
 services:
-  model_chat:
-    container_name: model_chat
+
+  model-chat:
+    container_name: model-chat
     build:
       context: .
     ports:
       - 8000:8000
     volumes:
-      - ./model_chat:/model_chat
+      - ./model-chat:/model-chat
       - ./data/web/static:/data/web/static/
       - ./data/web/media:/data/web/media/
     env_file:
       - ./dotenv_files/.env
     depends_on:
-      - psql
-  psql:
-    container_name: psql
-    image: postgres:13
-    volumes:
-      - ./data/postgres/data:/var/lib/postgresql/data/
-    env_file:
-      - ./dotenv_files/.env
+      - mysql
+
+  mysql:
+      container_name: mysql
+      image: mysql:8.2
+      volumes:
+        - ./data/mysql/data:/var/lib/mysql
+      env_file:
+        - ./dotenv_files/.env

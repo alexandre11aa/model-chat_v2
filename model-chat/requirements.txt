@@ -1,0 +1,12 @@
+Django==4.2
+asgiref==3.8.1
+sqlparse==0.5.3
+mysqlclient==2.2.0
+
+djangorestframework
+markdown
+django-filter
+python-socketio
+eventlet
+django-cors-headers
+djangorestframework-simplejwt
