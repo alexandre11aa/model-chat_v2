@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,6 +29,8 @@ SECRET_KEY = 'django-insecure-$m=m9*q9h-6@9d!&u!v(8me2a2%88*0dsim-edx!$*0hk+rfyt
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+CURRENT_URL = 'http://127.0.0.1:8000/'
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000'
@@ -48,6 +51,9 @@ INSTALLED_APPS = [
 
     # Django Cors Headers
     'corsheaders',
+
+    # Apps
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -118,6 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "accounts.User"
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -136,7 +143,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+MEDIA_URL = '/media/'
+
 STATIC_ROOT = "/data/web/static"
+
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type
@@ -154,4 +165,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ]
+}
+
+
+# Simple JWT Settings
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7)
 }
