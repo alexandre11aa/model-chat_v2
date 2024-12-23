@@ -95,15 +95,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE'),
-        'NAME': os.getenv('MYSQL_DATABASE'),
-        'USER': os.getenv('MYSQL_USER'),
-        'PASSWORD': os.getenv('MYSQL_ROOT_PASSWORD'),
-        'HOST': os.getenv('MYSQL_HOST'),
-        'PORT': os.getenv('MYSQL_PORT'),
-        'OPTIONS': {
-            'charset': 'utf8mb4'
-        }
+        'ENGINE': os.getenv('DB_ENGINE', 'change-me'),
+        'NAME': os.getenv('POSTGRES_DB', 'change-me'),
+        'USER': os.getenv('POSTGRES_USER', 'change-me'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'change-me'),
+        'HOST': os.getenv('POSTGRES_HOST', 'change-me'),
+        'PORT': os.getenv('POSTGRES_PORT', 'change-me'),
     }
 }
 

@@ -5,8 +5,8 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Copia os arquivos necessários para o contêiner
-COPY model-chat /model-chat
-COPY scripts /scripts
+COPY backend/model-chat /model-chat
+COPY backend/scripts /scripts
 
 # Define o diretório de trabalho
 WORKDIR /model-chat
@@ -19,8 +19,8 @@ RUN python -m venv /venv && \
   /venv/bin/pip install -r /model-chat/requirements.txt && \
   mkdir -p /data/web/static && \
   mkdir -p /data/web/media && \
-  chmod -R 755 /data/web/static && \
-  chmod -R 755 /data/web/media && \
+  chmod -R 775 /data/web/static && \
+  chmod -R 775 /data/web/media && \
   chmod -R +x /scripts
 
 ENV PATH="/scripts:/venv/bin:$PATH"
