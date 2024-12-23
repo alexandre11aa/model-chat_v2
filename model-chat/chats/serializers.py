@@ -34,7 +34,7 @@ class ChatSerializer(serializers.ModelSerializer):
 
         return unseen_count
     
-    def get_last_count(self, chat):
+    def get_last_message(self, chat):
         last_message = ChatMessage.objects.filter(
             chat_id=chat.id,
             deleted_at__isnull=True
@@ -43,7 +43,7 @@ class ChatSerializer(serializers.ModelSerializer):
         if not last_message:
             return None
         
-        return ChatMessagesSerializer(last_message.data)
+        return ChatMessagesSerializer(last_message).data
 
 
 class ChatMessagesSerializer(serializers.ModelSerializer):
@@ -57,10 +57,10 @@ class ChatMessagesSerializer(serializers.ModelSerializer):
     def get_from_user(self, message):
         return UserSerializer(message.from_user).data
     
-    def get_attachmetns(self, message):
+    def get_attachment(self, message):
         if message.attachment_code == 'FILE':
             file_attachment = FileAttachment.objects.filter(
-                id=message.attachments_id
+                id=message.attachment_id
             ).first()
 
             if not file_attachment:
@@ -72,7 +72,7 @@ class ChatMessagesSerializer(serializers.ModelSerializer):
     
         if message.attachment_code == 'AUDIO':
             audio_attachment = AudioAttachment.objects.filter(
-                id=message.attachments_id
+                id=message.attachment_id
             ).first()
 
             if not audio_attachment:

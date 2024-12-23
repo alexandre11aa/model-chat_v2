@@ -36,7 +36,7 @@ class BaseView(APIView):
         chat = Chat.objects.filter(
             Q(from_user=user_id) | Q(to_user=user_id),
             id=chat_id,
-            delete_at__isnull=True
+            deleted_at__isnull=True
         ).first()
 
         if not chat:
