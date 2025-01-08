@@ -1,16 +1,20 @@
 # Django #
-*.log
-*.pot
-*.pyc
-__pycache__
-db.sqlite3
-media
+backend/model-chat/*.log
+backend/model-chat/*.pot
+backend/model-chat/*.pyc
+backend/model-chat/__pycache__/
+backend/model-chat/db.sqlite3
+backend/model-chat/media/
+backend/model-chat/staticfiles/
+backend/model-chat/*.log
+backend/model-chat/*.pot
 /data
+
 # Backup files # 
 *.bak 
 
 # Ignore only the Django Admin static files
-/model_chat/static/admin/
+backend/model_chat/static/admin/
 
 # If you are using PyCharm # 
 # User-specific stuff
@@ -101,7 +105,7 @@ celerybeat-schedule.*
 *.sage.py 
 
 # Environments 
-#.env 
+#backend/dotenv_files/.env 
 .venv 
 env/ 
 venv/ 
@@ -139,3 +143,47 @@ GitHub.sublime-settings
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+# React / Next.js
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+frontend/model-chat/node_modules/
+frontend/model-chat/.pnp/
+frontend/model-chat/.pnp.*
+frontend/model-chat/.yarn/*
+!frontend/model-chat/.yarn/patches/
+!frontend/model-chat/.yarn/plugins/
+!frontend/model-chat/.yarn/releases/
+!frontend/model-chat/.yarn/versions/
+
+# testing
+frontend/model-chat/coverage/
+
+# next.js
+frontend/model-chat/.next/
+frontend/model-chat/out/
+
+# production
+frontend/model-chat/build/
+
+# misc
+frontend/model-chat/.DS_Store
+frontend/model-chat/*.pem
+
+# debug
+frontend/model-chat/npm-debug.log*
+frontend/model-chat/yarn-debug.log*
+frontend/model-chat/yarn-error.log*
+frontend/model-chat/.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+frontend/model-chat/.env*
+
+# vercel
+frontend/model-chat/.vercel/
+
+# typescript
+frontend/model-chat/*.tsbuildinfo
+frontend/model-chat/next-env.d.ts

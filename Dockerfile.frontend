@@ -1,0 +1,20 @@
+# Use a imagem oficial do Node.js
+FROM node:18
+
+# Define o diretório de trabalho no container
+WORKDIR /model-chat
+
+# Copia o package.json e o package-lock.json
+COPY frontend/model-chat/package*.json ./
+
+# Instala as dependências
+RUN npm install
+
+# Copia todo o restante do projeto
+COPY frontend/model-chat ./
+
+# Expõe a porta padrão do Next.js
+EXPOSE 3000
+
+# Comando para rodar o servidor Next.js
+CMD ["npm", "run", "dev"]

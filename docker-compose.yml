@@ -1,9 +1,10 @@
 services:
 
-  model-chat:
-    container_name: model-chat
+  backend:
+    container_name: model-chat-backend
     build:
       context: .
+      dockerfile: Dockerfile.backend
     ports:
       - 8000:8000
     volumes:
@@ -22,3 +23,14 @@ services:
       - ./data/postgres/data:/var/lib/postgresql/data/
     env_file:
       - ./backend/dotenv_files/.env
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/model-chat:/model-chat
+    stdin_open: true
+    tty: true
