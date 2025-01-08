@@ -63,7 +63,7 @@ dist/
 downloads/ 
 eggs/ 
 .eggs/ 
-lib/ 
+lib/
 lib64/ 
 parts/ 
 sdist/ 
@@ -157,6 +157,7 @@ frontend/model-chat/.yarn/*
 !frontend/model-chat/.yarn/plugins/
 !frontend/model-chat/.yarn/releases/
 !frontend/model-chat/.yarn/versions/
+!frontend/model-chat/src/lib/
 
 # testing
 frontend/model-chat/coverage/
