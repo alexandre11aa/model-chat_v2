@@ -32,5 +32,6 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend/model-chat:/model-chat
+      - /model-chat/node_modules
     stdin_open: true
     tty: true
