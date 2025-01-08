@@ -33,5 +33,7 @@ services:
     volumes:
       - ./frontend/model-chat:/model-chat
       - /model-chat/node_modules
+    env_file:
+      - ./frontend/dotenv_files/.env
     stdin_open: true
     tty: true
