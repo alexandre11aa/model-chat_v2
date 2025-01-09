@@ -1,6 +1,6 @@
 "use client";
 
-import { z } from "zod"
+import { z } from "zod";
 
 /* Sign In */
 export const signInSchema = z.object({
