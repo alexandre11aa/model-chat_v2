@@ -9,7 +9,7 @@ import dayjs from "dayjs";
 import 'dayjs/locale/pt-br';
 
 /* Inicialização do socket.io */
-export const socker = io(process.env.NEXT_PUBLIC_API_BASE_URL as string)
+export const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL as string)
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
     useEffect(() => {
