@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import Link from "next/link"
 import Image from "next/image"
-import Logo from "@/assets/logo.svg"
+import Logo from "@/assets/estrela.svg"
 import { Button } from "@/components/ui/button"
 import { ChevronDown, Home, LogOut, Menu, Moon, Sun, User } from "lucide-react"
 import { DropdownMenu, 
@@ -39,7 +39,7 @@ export const Header = () => {
                         <Image 
                             src={Logo}
                             alt="Logo de Estrela"
-                            width={170}
+                            width={35}
                             priority
                         />
                     </Link>
