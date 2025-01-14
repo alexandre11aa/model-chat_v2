@@ -31,7 +31,7 @@ def update_messages_as_seen(sid, data):
     # Sending update chat to user
     socket.emit('update_chat', {
         'query': {
-            'users:' [chat['from_user_id'], chat['to_user_id']]
+            'users': [chat['from_user_id'], chat['to_user_id']]
         }
     })
 

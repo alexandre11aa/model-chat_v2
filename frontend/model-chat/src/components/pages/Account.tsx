@@ -142,7 +142,7 @@ export const AccountPage = () => {
                                                 <FormItem>
                                                     <FormLabel>Senha</FormLabel>
                                                     <FormControl>
-                                                        <Input type='password' placeholder="Ex: 123456" {...field} />
+                                                        <Input type='password' placeholder="Ex: 123456A@" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -155,7 +155,7 @@ export const AccountPage = () => {
                                                 <FormItem>
                                                     <FormLabel>Confirme sua senha</FormLabel>
                                                     <FormControl>
-                                                        <Input type='password' placeholder="Ex: 123456" {...field} />
+                                                        <Input type='password' placeholder="Ex: 123456A@" {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>

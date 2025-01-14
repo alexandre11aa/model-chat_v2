@@ -1,7 +1,7 @@
 services:
 
   backend:
-    container_name: model-chat-backend
+    container_name: mc-backend
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -25,6 +25,7 @@ services:
       - ./backend/dotenv_files/.env
 
   frontend:
+    container_name: mc-frontend
     build:
       context: .
       dockerfile: Dockerfile.frontend

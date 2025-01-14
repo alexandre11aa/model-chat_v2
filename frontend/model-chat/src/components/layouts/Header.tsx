@@ -98,7 +98,7 @@ export const Header = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <Link href='/'>
+                                <Link href='/account'>
                                     <DropdownMenuItem>
                                         <User className="mr-3 dize-4" />
                                         <span>Perfil</span>
