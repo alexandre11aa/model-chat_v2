@@ -27,7 +27,7 @@ export const Header = () => {
     return (
         <div className="flex items-center gap-6 border-b bg-slate-100/80 dark:bg-slate-900/80 px-8 pr-12 h-16">
             <Avatar className="size-11" isOnline={userIsOnline}>
-                <AvatarImage 
+                <AvatarImage
                     src={chat?.user.avatar}
                     alt={chat?.user.name}
                 />
@@ -37,13 +37,13 @@ export const Header = () => {
             <div className="flex-1">
                 <h1 className="font-bold text-ellipsis truncate max-w-96">{chat?.user.name}</h1>
                 <small className="text-slate-500 dark:text-slate-400 block mt-0.5">
-                    {userIsOnline ? 'Online' : `Última visualização em ${dayjs(chats?.find(item => item.id === chat?.id)?.user.last_access).format('DD/MM/YYYY [ás] H:mm')}`}
+                    {userIsOnline ? "Online" : `Última visualização ${dayjs(chats?.find(item => item.id === chat?.id)?.user.last_access).format('DD/MM/YYYY [ás] HH:mm')}`}
                 </small>
             </div>
 
             <DropdownMenu>
                 <DropdownMenuTrigger>
-                    <EllipsisVertical 
+                    <EllipsisVertical
                         className="size-5 text-slate-500 dark:text-slate-400 hover:text-primary cursor-pointer"
                     />
                 </DropdownMenuTrigger>

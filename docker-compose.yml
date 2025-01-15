@@ -1,7 +1,7 @@
 services:
 
   backend:
-    container_name: mc-backend
+    container_name: backend
     build:
       context: .
       dockerfile: Dockerfile.backend
@@ -15,6 +15,8 @@ services:
       - ./backend/dotenv_files/.env
     depends_on:
       - psql
+    networks:
+      - network
 
   psql:
     container_name: psql
@@ -23,9 +25,11 @@ services:
       - ./data/postgres/data:/var/lib/postgresql/data/
     env_file:
       - ./backend/dotenv_files/.env
+    networks:
+      - network
 
   frontend:
-    container_name: mc-frontend
+    container_name: frontend
     build:
       context: .
       dockerfile: Dockerfile.frontend
@@ -38,3 +42,9 @@ services:
       - ./frontend/dotenv_files/.env
     stdin_open: true
     tty: true
+    networks:
+      - network
+
+networks:
+  network:
+    driver: bridge
