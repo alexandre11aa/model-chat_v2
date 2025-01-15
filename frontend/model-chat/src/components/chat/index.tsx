@@ -29,7 +29,7 @@ export const Chat = () => {
             return;
         }
 
-        setChatMessages(response.data.message)
+        setChatMessages(response.data.messages)
     }
 
     const handleSendMessage = async ({ text, attachment, audio }: { text?: string, attachment?: File | null, audio?: Blob | null }) => {
@@ -124,7 +124,7 @@ export const Chat = () => {
                     <div className="flex items-center justify-center h-full">
                         <ScaleLoader color="#493cdd" />
                     </div>
-                    :
+                :
                     <div className="space-y-8 p-7" ref={bodyMessagesRef}>
                         {chatMessages?.map(data => (
                             <div

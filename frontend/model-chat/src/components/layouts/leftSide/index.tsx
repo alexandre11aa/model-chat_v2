@@ -1,7 +1,7 @@
 import { getChats } from "@/lib/requests"
 import { useAuthStore } from "@/stores/authStore"
 import { useChatStore } from "@/stores/chatStore"
-import { Chat, APIUpdateChatEvent } from "@/types/Chat"
+import { Chat, UpdateChatEvent } from "@/types/Chat"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
 import { socket } from "../Providers"
@@ -47,7 +47,7 @@ export const LeftSide = ({ variant = "desktop" }: Props) => {
     }, [chats])
 
     useEffect(() => {
-        const handleUpdateChat = (data: APIUpdateChatEvent) => {
+        const handleUpdateChat = (data: UpdateChatEvent) => {
             if (user && data.query.users.includes(user.id)) {
                 handleGetChats()
             }
@@ -104,7 +104,7 @@ export const LeftSide = ({ variant = "desktop" }: Props) => {
                         className={`flex items-center gap-4 py-4 px-3 ${chat.id === currentChat?.id ? 'bg-slate-200 dark:bg-slate-800' : ''} hover:bg-slate-200 hover:dark:bg-slate-700 cursor-pointer transition`}
                         onClick={() => setChat(chat)}
                     >
-                        <Avatar className="size-[46px]" isOnline={dayjs().subtract(5, 'minutes').isBefore(dayjs(chat.user.last_access))}>
+                        <Avatar className="relative" isOnline={dayjs().subtract(5, 'minutes').isBefore(dayjs(chat.user.last_access))}>
                             <AvatarImage
                                 src={chat.user.avatar}
                                 alt={chat.user.name}
@@ -117,7 +117,7 @@ export const LeftSide = ({ variant = "desktop" }: Props) => {
                                 <div className="font-bold text-slate-800 dark:text-slate-100 truncate text-ellipsis">
                                     {chat.user.name}
                                 </div>
-                                <div className="text-sm font-semibold text-grey-500 dark:text-grey-400">
+                                <div className="text-sm font-semibold text-gray-500 dark:text-gray-400">
                                     {dayjs(chat.viewed_at || chat.created_at).format('DD/MM/YYYY')}
                                 </div>
                             </div>
@@ -127,20 +127,17 @@ export const LeftSide = ({ variant = "desktop" }: Props) => {
                                     <div className="text-sm font-semibold text-slate-800 dark:text-slate-300 truncate text-ellipsis">
                                         {chat.last_message.body ?
                                             chat.last_message.body
-                                        :
-                                            chat.last_message.attachment?.audio ?
+                                        : chat.last_message.attachment?.audio ?
                                                 <div className="flex items-center gap-1">
                                                     <Mic className="size-4 mb-0.5" strokeWidth={2} />
                                                     Mensagem de voz
                                                 </div>
-                                            :
-                                                chat.last_message.attachment?.file ?
+                                            : chat.last_message.attachment?.file ?
                                                     <div className="flex items-center gap-1">
                                                         <FileText className="size-4 mb-0.5" strokeWidth={2} />
                                                         Arquivo
                                                     </div>
-                                                :
-                                                    ''
+                                                : ''
                                         }
                                     </div>
 
@@ -148,18 +145,17 @@ export const LeftSide = ({ variant = "desktop" }: Props) => {
                                         <Badge>{chat.unseen_count}</Badge>
                                     :
                                         chat.last_message.from_user.id == user?.id &&
-                                            <div className={chat.last_message.viewed_at ? 'text-emerald-600 dark: text-emerald-400' : 'text-slate-800 dark: text-slate-300'}>
-                                                <CheckCheck className="size-5" strokeWidth={2} />
-                                            </div>
+                                        <div className={chat.last_message.viewed_at ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-800 dark:text-slate-300'}>
+                                            <CheckCheck className="size-5" strokeWidth={2} />
+                                        </div>
                                     }
                                 </div>
                             :
                                 <div className="text-sm font-semibold text-slate-800 dark:text-slate-300 truncate text-ellipsis">
-                                    CLique para enviar uma mensage!
-                                </div>                                
+                                    Clique para enviar uma mensagem
+                                </div>
                             }
                         </div>
-
                     </div>
                 ))}
             </div>

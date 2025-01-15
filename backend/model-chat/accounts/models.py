@@ -66,7 +66,7 @@ class User(AbstractBaseUser, PermissionsMixin, BaseModel):
     avatar = models.TextField(default="/media/avatars/default-avatar.png")
     name = models.CharField(max_length=80)
     email = models.EmailField(unique=True)
-    last_access= models.DateField(auto_now_add=True)
+    last_access= models.DateTimeField(auto_now_add=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
 

@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ['*']  # Recomendado apenas para teste
 
 CURRENT_URL = 'http://127.0.0.1:8000/'
 
-CURRENT_URL = os.getenv('CURRENT_URL', 'http://127.0.0.1:8000/')
+CURRENT_URL = os.getenv('CURRENT_URL', '')
 
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
 

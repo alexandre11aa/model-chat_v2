@@ -23,14 +23,14 @@ const FileMessage = ({ data }: { data: FileAttachment }) => (
                     src={data.src}
                     alt={data.name}
                 />
-                :
+            :
                 data.content_type.startsWith('video/') ?
                     <video
                         className="max-w-96 h-80 object-cover rounded-md"
                         src={data.src}
                         controls
                     />
-                    :
+                :
                     <div className="flex items-center gap-3.5 py-1 px-2.5">
                         <FileText className="size-7" />
 
@@ -78,11 +78,11 @@ export const MessageItem = ({ data, onDelete }: Props) => {
                             <FileMessage
                                 data={data.attachment.file}
                             />
-                            : data.attachment?.audio ?
+                        : data.attachment?.audio ?
                                 <AudioMessage
                                     data={data.attachment.audio}
                                 />
-                                : ''
+                            : ''
                         }
 
                         {data.body && <p className="text-[15px] break-words">{data.body}</p>}
