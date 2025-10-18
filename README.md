@@ -1,6 +1,6 @@
 # Model Chat
 
-Modelo de chat assíncrono baseado estruturado em containers com a utilização do Docker. Nele é possível a troca de mensagens entre usuários em chats privados.
+Modelo de chat assíncrono estruturado em containers com a utilização do Docker e docker-compose. Nele é possível a troca de mensagens entre usuários em chats privados.
 
 ## Docker
 
